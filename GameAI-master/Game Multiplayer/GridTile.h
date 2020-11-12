@@ -3,13 +3,13 @@
 #include "GameGlobal.h"
 #include "GameDefine.h"
 #include "Astar.h"
-
+#include "Vec2.h"
 
 
 class GridTile
 {
 protected:
-	Astar::Vec2 vec;
+	Vec2 vec;
 	Animation* anim;
 	D3DXVECTOR2 position = D3DXVECTOR2(0.f, 0.f);
 	TileType type;
@@ -18,9 +18,9 @@ protected:
 public:
 	GridTile();
 	~GridTile() {};
-	void SetVec(Astar::Vec2 vec2) { vec = vec2; };
+	void SetVec(Vec2 vec2) { vec = vec2; };
 	void SetVec(int x, int y) { vec.reset(x, y); };
-	Astar::Vec2 GetVec() { return vec; };
+	Vec2 GetVec() { return vec; };
 	void Draw();
 	TileType GetType() { return type; };
 	void SetType(TileType type);

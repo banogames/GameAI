@@ -3,8 +3,6 @@
 
 AStarScene::AStarScene()
 {
-	astar = new Astar();
-
 	player = new Player();
 	player->Position = D3DXVECTOR2(25.f, 25.f);
 
@@ -136,10 +134,10 @@ void AStarScene::RunAStar()
 {
 #pragma region v1
 	//	path.clear();
-//	AStar::Node beginNode;
+//	Node beginNode;
 //	beginNode.vec.reset(begin.GetVec().x, begin.GetVec().y);
 //
-//	AStar::Node destNode;
+//	Node destNode;
 //	destNode.vec.reset(destination.GetVec().x, destination.GetVec().y);
 //
 //	std::vector<AStar::Vec2> pathVec2 = FindPathAstar();
@@ -168,21 +166,23 @@ void AStarScene::RunAStar()
 #pragma endregion
 
 	path.clear();
-	Astar::Node beginNode;
-	beginNode.vec.reset((int)begin.GetVec().x, (int)begin.GetVec().y);
+	Node beginNode;
+	beginNode.SetX((int)begin.GetVec().x);
+	beginNode.SetY((int)begin.GetVec().y);
 
-	Astar::Node destNode;
-	destNode.vec.reset((int)destination.GetVec().x, (int)destination.GetVec().y);
+	Node destNode;
+	destNode.SetX((int)destination.GetVec().x);
+	destNode.SetY((int)destination.GetVec().y);
 
-	array<array<Astar::Node, (Y_MAX / Y_STEP)>, (X_MAX / X_STEP)> mapAstar;
+	array<array<Node, (Y_MAX / Y_STEP)>, (X_MAX / X_STEP)> mapAstar;
 
 	astar->makePath(mapAstar, destNode);
 
-	vector<Astar::Node> pathNode = astar->aStar(beginNode, destNode);
+	vector<Node> pathNode = astar->aStar(beginNode, destNode);
 
-	for (vector<Astar::Node> ::iterator it = pathNode.begin(); it != pathNode.end(); it = next(it))
+	for (vector<Node> ::iterator it = pathNode.begin(); it != pathNode.end(); it = next(it))
 	{
-		path.push_back(map[it->vec.x][it->vec.y]);
+		path.push_back(map[it->x][it->y]);
 	}
 }
 

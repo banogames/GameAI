@@ -17,33 +17,33 @@ bool Astar::isObstacle(int x, int y)
 }
 
 bool Astar::isDestination(int x, int y, Node dest) {
-		if (x == dest.vec.x && y == dest.vec.y) {
+		if (x == dest.GetX() && y == dest.GetY()) {
 			return true;
 		}
 		return false;
 	}
 
 double Astar::calculateH(int x, int y, Node dest) {
-		double H = (sqrt((x - dest.vec.x)*(x - dest.vec.x)
-			+ (y - dest.vec.y)*(y - dest.vec.y)));
+		double H = (sqrt((x - dest.GetX())*(x - dest.GetX())
+			+ (y - dest.GetY())*(y - dest.GetY())));
 		return H;
 }
 
-vector<Astar::Node> Astar::makePath(array<array<Node, (Y_MAX / Y_STEP)>, (X_MAX / X_STEP)> map, Node dest)
+vector<Node> Astar::makePath(array<array<Node, (Y_MAX / Y_STEP)>, (X_MAX / X_STEP)> map, Node dest)
 {
 	try {
 		cout << "Found a path" << endl;
-		int x = dest.vec.x;
-		int y = dest.vec.y;
+		int x = dest.GetX();
+		int y = dest.GetY();
 		stack<Node> path;
 		vector<Node> usablePath;
 
-		while (!(map[x][y].vecParent.x == x && map[x][y].vecParent.y == y)
-			&& map[x][y].vec.x != -1 && map[x][y].vec.y != -1)
+		while (!(map[x][y].parentX == x && map[x][y].parentY == y)
+			&& map[x][y].GetX() != -1 && map[x][y].GetY() != -1)
 		{
 			path.push(map[x][y]);
-			int tempX = map[x][y].vecParent.x;
-			int tempY = map[x][y].vecParent.y;
+			int tempX = map[x][y].parentX;
+			int tempY = map[x][y].parentY;
 			x = tempX;
 			y = tempY;
 
@@ -64,15 +64,15 @@ vector<Astar::Node> Astar::makePath(array<array<Node, (Y_MAX / Y_STEP)>, (X_MAX 
 }
 
 
-vector<Astar::Node> Astar::aStar(Node player, Node dest) 
+vector<Node> Astar::aStar(Node player, Node dest) 
 {
 	vector<Node> empty;
-	if (isValid(dest.vec.x, dest.vec.y) == false) {
+	if (isValid(dest.GetX(), dest.GetY()) == false) {
 		cout << "Destination is an obstacle" << endl;
 		return empty;
 		//Destination is invalid
 	}
-	if (isDestination(player.vec.x, player.vec.y, dest)) {
+	if (isDestination(player.GetX(), player.GetY(), dest)) {
 		cout << "You are the destination" << endl;
 		return empty;
 		//You clicked on yourself
@@ -86,20 +86,23 @@ vector<Astar::Node> Astar::aStar(Node player, Node dest)
 			allMap[x][y].fCost = FLT_MAX;
 			allMap[x][y].gCost = FLT_MAX;
 			allMap[x][y].hCost = FLT_MAX;
-			allMap[x][y].vecParent.reset(-1, -1);
-			allMap[x][y].vec.reset(x, y);
+			allMap[x][y].parentX = -1;
+			allMap[x][y].parentY = -1;
+			allMap[x][y].x = x;
+			allMap[x][y].y = y;
 
 			closedList[x][y] = false;
 		}
 	}
 
 	//Initialize our starting list
-	int x = player.vec.x;
-	int y = player.vec.y;
+	int x = player.GetX();
+	int y = player.GetY();
 	allMap[x][y].fCost = 0.0;
 	allMap[x][y].gCost = 0.0;
 	allMap[x][y].hCost = 0.0;
-	allMap[x][y].vecParent.reset(x, y);
+	allMap[x][y].parentX = x;
+	allMap[x][y].parentY = y;
 
 	vector<Node> openList;
 	openList.emplace_back(allMap[x][y]);
@@ -125,10 +128,10 @@ vector<Astar::Node> Astar::aStar(Node player, Node dest)
 			}
 			node = *itNode;
 			openList.erase(itNode);
-		} while (isValid(node.vec.x, node.vec.y) == false);
+		} while (isValid(node.GetX(), node.GetY()) == false);
 
-		x = node.vec.x;
-		y = node.vec.y;
+		x = node.GetX();
+		y = node.GetY();
 		closedList[x][y] = true;
 
 		//For each neighbour starting from North-West to South-East
@@ -139,7 +142,8 @@ vector<Astar::Node> Astar::aStar(Node player, Node dest)
 					if (isDestination(x + newX, y + newY, dest))
 					{
 						//Destination found - make path
-						allMap[x + newX][y + newY].vecParent.reset(x, y);
+						allMap[x + newX][y + newY].parentX = x;
+						allMap[x + newX][y + newY].parentY = y;
 						destinationFound = true;
 						return makePath(allMap, dest);
 					}
@@ -156,7 +160,8 @@ vector<Astar::Node> Astar::aStar(Node player, Node dest)
 							allMap[x + newX][y + newY].fCost = fNew;
 							allMap[x + newX][y + newY].gCost = gNew;
 							allMap[x + newX][y + newY].hCost = hNew;
-							allMap[x + newX][y + newY].vecParent.reset(x, y);
+							allMap[x + newX][y + newY].parentX =x;
+							allMap[x + newX][y + newY].parentY =y;
 							openList.emplace_back(allMap[x + newX][y + newY]);
 						}
 					}

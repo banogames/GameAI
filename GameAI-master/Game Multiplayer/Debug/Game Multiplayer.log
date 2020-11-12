@@ -1,0 +1,83 @@
+﻿  Astar.cpp
+d:\hoc tap\monhoc\game ai\v2\gameai - astar\gameai-master\game multiplayer\astar.cpp(2): warning C4067: unexpected tokens following preprocessor directive - expected a newline
+d:\hoc tap\monhoc\game ai\v2\gameai - astar\gameai-master\game multiplayer\astar.h(60): error C2535: 'Astar::Node::Node(void)': member function already defined or declared
+  d:\hoc tap\monhoc\game ai\v2\gameai - astar\gameai-master\game multiplayer\astar.h(57): note: see declaration of 'Astar::Node::Node'
+d:\hoc tap\monhoc\game ai\v2\gameai - astar\gameai-master\game multiplayer\astar.cpp(156): warning C4244: '=': conversion from 'double' to 'float', possible loss of data
+d:\hoc tap\monhoc\game ai\v2\gameai - astar\gameai-master\game multiplayer\astar.cpp(157): warning C4244: '=': conversion from 'double' to 'float', possible loss of data
+d:\hoc tap\monhoc\game ai\v2\gameai - astar\gameai-master\game multiplayer\astar.cpp(158): warning C4244: '=': conversion from 'double' to 'float', possible loss of data
+  AStarScene.cpp
+d:\hoc tap\monhoc\game ai\v2\gameai - astar\gameai-master\game multiplayer\astar.h(60): error C2535: 'Astar::Node::Node(void)': member function already defined or declared
+  d:\hoc tap\monhoc\game ai\v2\gameai - astar\gameai-master\game multiplayer\astar.h(57): note: see declaration of 'Astar::Node::Node'
+d:\hoc tap\monhoc\game ai\v2\gameai - astar\gameai-master\game multiplayer\astar.h(14): error C2011: 'Astar': 'class' type redefinition
+  d:\hoc tap\monhoc\game ai\v2\gameai - astar\gameai-master\game multiplayer\astar.h(13): note: see declaration of 'Astar'
+d:\hoc tap\monhoc\game ai\v2\gameai - astar\gameai-master\game multiplayer\astarscene.cpp(6): error C2027: use of undefined type 'Astar'
+  d:\hoc tap\monhoc\game ai\v2\gameai - astar\gameai-master\game multiplayer\astar.h(13): note: see declaration of 'Astar'
+d:\hoc tap\monhoc\game ai\v2\gameai - astar\gameai-master\game multiplayer\astarscene.cpp(53): warning C4018: '<': signed/unsigned mismatch
+d:\hoc tap\monhoc\game ai\v2\gameai - astar\gameai-master\game multiplayer\astarscene.cpp(171): error C2027: use of undefined type 'Astar'
+  d:\hoc tap\monhoc\game ai\v2\gameai - astar\gameai-master\game multiplayer\astar.h(13): note: see declaration of 'Astar'
+d:\hoc tap\monhoc\game ai\v2\gameai - astar\gameai-master\game multiplayer\astarscene.cpp(171): error C2065: 'Node': undeclared identifier
+d:\hoc tap\monhoc\game ai\v2\gameai - astar\gameai-master\game multiplayer\astarscene.cpp(171): error C2146: syntax error: missing ';' before identifier 'beginNode'
+d:\hoc tap\monhoc\game ai\v2\gameai - astar\gameai-master\game multiplayer\astarscene.cpp(171): error C2065: 'beginNode': undeclared identifier
+d:\hoc tap\monhoc\game ai\v2\gameai - astar\gameai-master\game multiplayer\astarscene.cpp(172): error C2065: 'beginNode': undeclared identifier
+d:\hoc tap\monhoc\game ai\v2\gameai - astar\gameai-master\game multiplayer\astarscene.cpp(174): error C2027: use of undefined type 'Astar'
+  d:\hoc tap\monhoc\game ai\v2\gameai - astar\gameai-master\game multiplayer\astar.h(13): note: see declaration of 'Astar'
+d:\hoc tap\monhoc\game ai\v2\gameai - astar\gameai-master\game multiplayer\astarscene.cpp(174): error C2065: 'Node': undeclared identifier
+d:\hoc tap\monhoc\game ai\v2\gameai - astar\gameai-master\game multiplayer\astarscene.cpp(174): error C2146: syntax error: missing ';' before identifier 'destNode'
+d:\hoc tap\monhoc\game ai\v2\gameai - astar\gameai-master\game multiplayer\astarscene.cpp(174): error C2065: 'destNode': undeclared identifier
+d:\hoc tap\monhoc\game ai\v2\gameai - astar\gameai-master\game multiplayer\astarscene.cpp(175): error C2065: 'destNode': undeclared identifier
+d:\hoc tap\monhoc\game ai\v2\gameai - astar\gameai-master\game multiplayer\astarscene.cpp(177): error C2027: use of undefined type 'Astar'
+  d:\hoc tap\monhoc\game ai\v2\gameai - astar\gameai-master\game multiplayer\astar.h(13): note: see declaration of 'Astar'
+d:\hoc tap\monhoc\game ai\v2\gameai - astar\gameai-master\game multiplayer\astarscene.cpp(177): error C2065: 'Node': undeclared identifier
+d:\hoc tap\monhoc\game ai\v2\gameai - astar\gameai-master\game multiplayer\astarscene.cpp(177): error C2923: 'std::array': 'Node' is not a valid template type argument for parameter '_Ty'
+d:\hoc tap\monhoc\game ai\v2\gameai - astar\gameai-master\game multiplayer\astarscene.cpp(177): error C3203: 'array': unspecialized class template can't be used as a template argument for template parameter '_Ty', expected a real type
+d:\hoc tap\monhoc\game ai\v2\gameai - astar\gameai-master\game multiplayer\astarscene.cpp(179): error C2027: use of undefined type 'Astar'
+  d:\hoc tap\monhoc\game ai\v2\gameai - astar\gameai-master\game multiplayer\astar.h(13): note: see declaration of 'Astar'
+d:\hoc tap\monhoc\game ai\v2\gameai - astar\gameai-master\game multiplayer\astarscene.cpp(179): error C2065: 'destNode': undeclared identifier
+d:\hoc tap\monhoc\game ai\v2\gameai - astar\gameai-master\game multiplayer\astarscene.cpp(181): error C2027: use of undefined type 'Astar'
+  d:\hoc tap\monhoc\game ai\v2\gameai - astar\gameai-master\game multiplayer\astar.h(13): note: see declaration of 'Astar'
+d:\hoc tap\monhoc\game ai\v2\gameai - astar\gameai-master\game multiplayer\astarscene.cpp(181): error C2065: 'Node': undeclared identifier
+d:\hoc tap\monhoc\game ai\v2\gameai - astar\gameai-master\game multiplayer\astarscene.cpp(181): error C2923: 'std::vector': 'Node' is not a valid template type argument for parameter '_Ty'
+d:\hoc tap\monhoc\game ai\v2\gameai - astar\gameai-master\game multiplayer\astarscene.cpp(181): error C3203: 'allocator': unspecialized class template can't be used as a template argument for template parameter '_Alloc', expected a real type
+d:\hoc tap\monhoc\game ai\v2\gameai - astar\gameai-master\game multiplayer\astarscene.cpp(181): error C2065: 'beginNode': undeclared identifier
+d:\hoc tap\monhoc\game ai\v2\gameai - astar\gameai-master\game multiplayer\astarscene.cpp(181): error C2065: 'destNode': undeclared identifier
+d:\hoc tap\monhoc\game ai\v2\gameai - astar\gameai-master\game multiplayer\astarscene.cpp(181): error C2512: 'std::vector': no appropriate default constructor available
+  c:\program files (x86)\microsoft visual studio\2017\community\vc\tools\msvc\14.16.27023\include\vector(625): note: see declaration of 'std::vector'
+d:\hoc tap\monhoc\game ai\v2\gameai - astar\gameai-master\game multiplayer\astarscene.cpp(183): warning C4346: 'Astar::Node': dependent name is not a type
+  d:\hoc tap\monhoc\game ai\v2\gameai - astar\gameai-master\game multiplayer\astarscene.cpp(183): note: prefix with 'typename' to indicate a type
+d:\hoc tap\monhoc\game ai\v2\gameai - astar\gameai-master\game multiplayer\astarscene.cpp(183): error C2923: 'std::vector': 'Astar::Node' is not a valid template type argument for parameter '_Ty'
+  d:\hoc tap\monhoc\game ai\v2\gameai - astar\gameai-master\game multiplayer\astarscene.cpp(183): note: see declaration of 'Astar::Node'
+d:\hoc tap\monhoc\game ai\v2\gameai - astar\gameai-master\game multiplayer\astarscene.cpp(183): error C3203: 'allocator': unspecialized class template can't be used as a template argument for template parameter '_Alloc', expected a real type
+d:\hoc tap\monhoc\game ai\v2\gameai - astar\gameai-master\game multiplayer\astarscene.cpp(183): error C2955: 'std::vector': use of class template requires template argument list
+  c:\program files (x86)\microsoft visual studio\2017\community\vc\tools\msvc\14.16.27023\include\vector(625): note: see declaration of 'std::vector'
+d:\hoc tap\monhoc\game ai\v2\gameai - astar\gameai-master\game multiplayer\astarscene.cpp(183): error C2027: use of undefined type 'Astar'
+  d:\hoc tap\monhoc\game ai\v2\gameai - astar\gameai-master\game multiplayer\astar.h(13): note: see declaration of 'Astar'
+d:\hoc tap\monhoc\game ai\v2\gameai - astar\gameai-master\game multiplayer\astarscene.cpp(183): error C2065: 'Node': undeclared identifier
+d:\hoc tap\monhoc\game ai\v2\gameai - astar\gameai-master\game multiplayer\astarscene.cpp(183): error C2923: 'std::vector': 'Node' is not a valid template type argument for parameter '_Ty'
+d:\hoc tap\monhoc\game ai\v2\gameai - astar\gameai-master\game multiplayer\astarscene.cpp(183): error C2663: 'std::vector<_Ty,_Alloc>::begin': 2 overloads have no legal conversion for 'this' pointer
+d:\hoc tap\monhoc\game ai\v2\gameai - astar\gameai-master\game multiplayer\astarscene.cpp(183): error C2512: 'std::_Vector_iterator<std::_Vector_val<_Alloc_types::_Val_types>>': no appropriate default constructor available
+  c:\program files (x86)\microsoft visual studio\2017\community\vc\tools\msvc\14.16.27023\include\vector(416): note: see declaration of 'std::_Vector_iterator<std::_Vector_val<_Alloc_types::_Val_types>>'
+d:\hoc tap\monhoc\game ai\v2\gameai - astar\gameai-master\game multiplayer\astarscene.cpp(183): error C2663: 'std::vector<_Ty,_Alloc>::end': 2 overloads have no legal conversion for 'this' pointer
+d:\hoc tap\monhoc\game ai\v2\gameai - astar\gameai-master\game multiplayer\astarscene.cpp(185): error C2678: binary '->': no operator found which takes a left-hand operand of type 'std::_Vector_iterator<std::_Vector_val<_Alloc_types::_Val_types>>' (or there is no acceptable conversion)
+  c:\program files (x86)\microsoft visual studio\2017\community\vc\tools\msvc\14.16.27023\include\vector(261): note: could be '_Myvec::pointer std::_Vector_iterator<_Myvec>::operator ->(void) const'
+  d:\hoc tap\monhoc\game ai\v2\gameai - astar\gameai-master\game multiplayer\astarscene.cpp(185): note: while trying to match the argument list '(std::_Vector_iterator<std::_Vector_val<_Alloc_types::_Val_types>>)'
+d:\hoc tap\monhoc\game ai\v2\gameai - astar\gameai-master\game multiplayer\astarscene.cpp(185): error C2039: 'vec': is not a member of 'std::_Vector_iterator<std::_Vector_val<_Alloc_types::_Val_types>>'
+  c:\program files (x86)\microsoft visual studio\2017\community\vc\tools\msvc\14.16.27023\include\vector(416): note: see declaration of 'std::_Vector_iterator<std::_Vector_val<_Alloc_types::_Val_types>>'
+d:\hoc tap\monhoc\game ai\v2\gameai - astar\gameai-master\game multiplayer\astarscene.cpp(192): warning C4018: '<': signed/unsigned mismatch
+d:\hoc tap\monhoc\game ai\v2\gameai - astar\gameai-master\game multiplayer\astarscene.cpp(204): warning C4018: '<': signed/unsigned mismatch
+  BattleScene.cpp
+d:\hoc tap\monhoc\game ai\v2\gameai - astar\gameai-master\game multiplayer\astar.h(60): error C2535: 'Astar::Node::Node(void)': member function already defined or declared
+  d:\hoc tap\monhoc\game ai\v2\gameai - astar\gameai-master\game multiplayer\astar.h(57): note: see declaration of 'Astar::Node::Node'
+d:\hoc tap\monhoc\game ai\v2\gameai - astar\gameai-master\game multiplayer\astar.h(14): error C2011: 'Astar': 'class' type redefinition
+  d:\hoc tap\monhoc\game ai\v2\gameai - astar\gameai-master\game multiplayer\astar.h(13): note: see declaration of 'Astar'
+d:\hoc tap\monhoc\game ai\v2\gameai - astar\gameai-master\game multiplayer\battlescene.cpp(15): error C2275: 'SIZE': illegal use of this type as an expression
+  c:\program files (x86)\windows kits\10\include\10.0.19041.0\shared\windef.h(190): note: see declaration of 'SIZE'
+  Game.cpp
+  c:\program files (x86)\microsoft directx sdk (june 2010)\include\dinput.h: DIRECTINPUT_VERSION undefined. Defaulting to version 0x0800
+d:\hoc tap\monhoc\game ai\v2\gameai - astar\gameai-master\game multiplayer\astar.h(60): error C2535: 'Astar::Node::Node(void)': member function already defined or declared
+  d:\hoc tap\monhoc\game ai\v2\gameai - astar\gameai-master\game multiplayer\astar.h(57): note: see declaration of 'Astar::Node::Node'
+d:\hoc tap\monhoc\game ai\v2\gameai - astar\gameai-master\game multiplayer\astar.h(14): error C2011: 'Astar': 'class' type redefinition
+  d:\hoc tap\monhoc\game ai\v2\gameai - astar\gameai-master\game multiplayer\astar.h(13): note: see declaration of 'Astar'
+  GridTile.cpp
+d:\hoc tap\monhoc\game ai\v2\gameai - astar\gameai-master\game multiplayer\astar.h(60): error C2535: 'Astar::Node::Node(void)': member function already defined or declared
+  d:\hoc tap\monhoc\game ai\v2\gameai - astar\gameai-master\game multiplayer\astar.h(57): note: see declaration of 'Astar::Node::Node'
+  Generating Code...

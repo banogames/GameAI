@@ -2,11 +2,11 @@
 #define _USE_MATH_DEFINES
 #include <math.h>
 
-#define X_MAX 1200
-#define Y_MAX 650
+#define X_MAX 1280
+#define Y_MAX 800
 
-#define X_STEP 50
-#define Y_STEP 50
+#define X_STEP 32
+#define Y_STEP 32
 
 const int COUNT_X = X_MAX / X_STEP;
 const int COUNT_Y = Y_MAX / Y_STEP;
@@ -47,5 +47,37 @@ enum TileType
 	Moving,
 	Begin,
 	Destination,
-	Path
+	Path,
+	Path_Dodging
 };
+
+struct  Vec2
+{
+	int x;
+	int y;
+
+	Vec2() : x(0), y(0)
+	{
+	}
+
+	Vec2(int x1, int y1) : x(x1), y(y1)
+	{
+	}
+
+	void reset(int x1, int y1)
+	{
+		x = x1;
+		y = y1;
+	}
+
+	int distance(const Vec2 &other) const
+	{
+		return abs(other.x - x) + abs(other.y - y);
+	}
+
+	bool operator== (const Vec2 &other) const
+	{
+		return x == other.x && y == other.y;
+	}
+};
+

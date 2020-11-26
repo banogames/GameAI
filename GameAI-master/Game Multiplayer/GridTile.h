@@ -2,9 +2,6 @@
 #include "Animation.h"
 #include "GameGlobal.h"
 #include "GameDefine.h"
-#include "Astar.h"
-#include "Vec2.h"
-
 
 class GridTile
 {
@@ -27,4 +24,7 @@ public:
 	D3DXVECTOR2 GetPosition() { return position; };
 	void SetPosition(D3DXVECTOR2 position) { this->position = position; }
 };
+
+
+
 

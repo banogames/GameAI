@@ -208,7 +208,6 @@
     <ClInclude Include="Node.h">
       <Filter>AStar</Filter>
     </ClInclude>
-    <ClInclude Include="Vec2.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="MapReader\Tmx.h.in">
@@ -337,9 +336,5 @@
     <ClCompile Include="Astar.cpp">
       <Filter>AStar</Filter>
     </ClCompile>
-    <ClCompile Include="Node.cpp">
-      <Filter>AStar</Filter>
-    </ClCompile>
-    <ClCompile Include="Vec2.cpp" />
   </ItemGroup>
 </Project>

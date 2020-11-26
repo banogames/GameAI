@@ -1,4 +1,4 @@
-#pragma once
+﻿#pragma once
 #include <array>
 
 #include "GridTile.h"
@@ -15,6 +15,8 @@
 #include "Pointed.h"
 #include "Water.h"
 
+#include "Astar.h"
+
 class BattleScene : public Scene
 {
 	GameMap* _map;
@@ -27,18 +29,18 @@ class BattleScene : public Scene
 	UpgradeItem* _upgradeItem;
 	Pointed* _pointed;
 
-	Label _labelPlayer;
-	Label _labelCountTime;
+	/*Label _labelPlayer;
+	Label _labelCountTime;*/
 
 	Water* _waterBrick;
-	
-	void MovePlayer();
+
 public:
-	std::array<std::array<GridTile*, COUNT_Y>, COUNT_X> map;
+	std::array<std::array<GridTile*, COUNT_Y>, COUNT_X> mapGrid;
 
 	BattleScene();
 	~BattleScene() {}
 	void Update(float _dt) override;
 	void Draw() override;
+	bool RandomGridTileMove(GridTile *grid);
 };
 

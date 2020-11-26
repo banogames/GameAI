@@ -14,8 +14,10 @@ public:
 	~Brick()  { delete _animation; }
 
 	void Draw() {
-		if (!IsDeleted)
+		if (!IsDeleted) {
 			_animation->Draw(Position);
+		}
+			
 	}
 
 // các hàm hỗ trợ
@@ -23,8 +25,8 @@ protected:
 	void BaseInit(D3DXVECTOR2 position)
 	{
 		Position = position;
-		_width = 16;
-		_height = 16;
+		_width = 32;
+		_height = 32;
 		_animation = new Animation();
 	}
 };

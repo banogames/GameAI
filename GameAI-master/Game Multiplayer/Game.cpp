@@ -3,14 +3,14 @@
 #include "GameGlobal.h"
 #include "SceneManager.h"
 #include "GameLog.h"
-//#include "BattleScene.h"
+#include "BattleScene.h"
 #include "AStarScene.h"
 #include <stdio.h>
 
 Game::Game()
 {
-	//SceneManager::Instance()->ReplaceScene(new BattleScene());
-	SceneManager::Instance()->ReplaceScene(new AStarScene());
+	SceneManager::Instance()->ReplaceScene(new BattleScene());
+	//SceneManager::Instance()->ReplaceScene(new AStarScene());
 
 	InitLoop();
 }

@@ -5,13 +5,15 @@
 #include "SpriteList.h"
 #include "GameCollision.h"
 
+#include "Astar.h"
+
 Player::Player()
 {
 	_type = ET_Player;
 	InitAnimation();
 	_currentAnimation = _upAnimationLv01;
-	_width = 32;
-	_height = 32;
+	_width = 28;
+	_height = 28;
 
 	// set vị trí ban đầu & màu người chơi
 	switch (_color_Position)
@@ -38,10 +40,19 @@ void Player::Update(float _dt)
 	if (IsDeleted)
 		return;
 
+	if ((Position.x / X_STEP) != (Position.x + Velocity.x * _dt) / X_STEP) 
+	{
+		printLog("astar update pos player");
+		//cập nhật astar
+		Astar::getInstance()->SetValue(Position.x / X_STEP, Position.y / Y_STEP, 0);
+		Astar::getInstance()->SetValue((Position.x + Velocity.x*_dt) / X_STEP, (Position.y + Velocity.y*_dt) / Y_STEP, 2);
+	}
+
 	Position += Velocity * _dt;
 
 	if (_isShield)
 		_shieldAnimation->Update(_dt);
+
 }
 
 void Player::HandleKeyboard(std::map<int, bool> keys, float _dt)
@@ -53,12 +64,12 @@ void Player::HandleKeyboard(std::map<int, bool> keys, float _dt)
 	{
 		_count_Shoot -= _dt;
 	}
-	if (_count_Shoot < 0 && keys[VK_SPACE]) // gửi data bắn đạn
-	{
-		_count_Shoot += _time_BetweenShoots;
-		
-		// shoot
-	}
+	//if (_count_Shoot < 0 && keys[VK_SPACE]) // gửi data bắn đạn
+	//{
+	//	_count_Shoot += _time_BetweenShoots;
+	//	
+	//	// shoot
+	//}
 
 	if (keys[VK_LEFT])
 	{
@@ -81,9 +92,11 @@ void Player::HandleKeyboard(std::map<int, bool> keys, float _dt)
 		_direction = D_Stand;
 	}
 
+
 	SetAnimation(_direction);
 	ApplyVelocity();
 }
+
 
 void Player::Move(D3DXVECTOR2 destination)
 {
@@ -372,19 +385,21 @@ void Player::CheckCollision(Entity * entity)
 	{
 		if (cR.Side == CS_Left)
 		{
-			Position.x += (float)(cR.Rect.right - cR.Rect.left) + 1;
+			Position.x += (float)(cR.Rect.right - cR.Rect.left) + 10;
 		}
 		else if (cR.Side == CS_Right)
 		{
-			Position.x -= (float)(cR.Rect.right - cR.Rect.left) - 1;
+			Position.x -= (float)(cR.Rect.right - cR.Rect.left) - 10;
 		}
 		else if (cR.Side == CS_Top)
 		{
-			Position.y += (float)(cR.Rect.bottom - cR.Rect.top) + 1;
+			Position.y += (float)(cR.Rect.bottom - cR.Rect.top) + 10;
 		}
 		else if (cR.Side == CS_Bottom)
 		{
-			Position.y -= (float)(cR.Rect.bottom - cR.Rect.top) - 1;
+			Position.y -= (float)(cR.Rect.bottom - cR.Rect.top) - 10;
 		}
+
 	}
 }
+

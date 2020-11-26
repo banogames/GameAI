@@ -4,7 +4,7 @@
 GridTile::GridTile()
 {
 	anim = new Animation();
-	anim->addFrameInfo(FrameInfo(SpriteList::Instance()->WhiteTile, 0, 50, 0, 50, D3DXVECTOR2(25.f, 25.f)));
+	anim->addFrameInfo(FrameInfo(SpriteList::Instance()->WhiteTile, 0, 32, 0, 32, D3DXVECTOR2(16.f, 16.f)));
 	type = Empty;
 	color = D3DCOLOR_XRGB(0, 0, 0);
 }
@@ -42,6 +42,9 @@ void GridTile::SetType(TileType type)
 		break;
 	case Path:
 		color = D3DCOLOR_XRGB(0, 255, 0);
+		break;
+	case Path_Dodging:
+		color = D3DCOLOR_XRGB(128, 50, 255);
 		break;
 	}
 }

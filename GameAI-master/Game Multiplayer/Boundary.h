@@ -11,7 +11,8 @@ public:
 		_type = ET_Boundary;
 
 		// thêm frame animation
-		_animation->addFrameInfo(FrameInfo(SpriteList::Instance()->tileset, 32, 32 + 16, 144, 144 + 16, D3DXVECTOR2(8.f, 8.f)));
+		_animation->addFrameInfo(FrameInfo(SpriteList::Instance()->tileset, 64, 64 + 32, 64, 64 + 32, 
+			D3DXVECTOR2(16.f, 16.f)));
 	}
 	~Boundary() {}
 };

@@ -25,9 +25,6 @@ AStarScene::AStarScene()
 			map[x][y] = new GridTile();
 			map[x][y]->SetVec(x, y);
 			map[x][y]->SetPosition(D3DXVECTOR2((x + 0.5f) * X_STEP, (y + 0.5f) * Y_STEP));
-
-			//parse map astar (0)
-			mapAStar[x][y] = 0;
 		}
 	}
 }
@@ -37,12 +34,17 @@ void AStarScene::OnLeftMouseDown(float x, float y)
 	//insert, delete
 	if (!_isPlayerMoving) 
 	{
-		int _x = int(x) / X_STEP, _y = int(y) / Y_STEP;
-		map[_x][_y]->SetType(Obstacle);
-		mapAStar[_x][_y] = 1;
+		int _x = int(x / X_STEP), _y = int(y / Y_STEP);
+		SetObstacle(_x, _y);
 	}
-	
 }
+
+void AStarScene::SetObstacle(int x, int y) 
+{
+	map[x][y]->SetType(Obstacle);
+	astar->SetValue(x, y, 1);
+}
+
 void AStarScene::OnRightMouseDown(float x, float y)
 {
 	//dung lai
@@ -62,12 +64,16 @@ void AStarScene::OnRightMouseDown(float x, float y)
 	tileBegin->SetType(Empty);
 	begin.SetPosition(player->Position);
 	begin.SetVec((int)(begin.GetPosition().x / X_STEP), (int)(begin.GetPosition().y / Y_STEP));
+
+	tileBegin = map[begin.GetVec().x][begin.GetVec().y];
 	tileBegin->SetType(Begin);
 
 	GridTile* tileDes = map[destination.GetVec().x][destination.GetVec().y];
 	tileDes->SetType(Empty);
 	destination.SetPosition(D3DXVECTOR2(x, y));
 	destination.SetVec((int)(x / X_STEP), (int)(y / Y_STEP));
+
+	tileDes = map[destination.GetVec().x][destination.GetVec().y];
 	tileDes->SetType(Destination);
 
 	RunAStar();
@@ -96,75 +102,8 @@ void AStarScene::ResetScene()
 }
 
 
-void AStarScene::FindPathAstar() 
-{
-#pragma region v1
-	//AStar::Params param;
-	//param.width = COUNT_X;
-	//param.height = COUNT_Y;
-	//param.corner = false; // 4 chieu
-	//param.start = begin.GetVec();
-	//param.end = destination.GetVec();
-	//param.can_pass = [&](const AStar::Vec2 &vec)->bool
-	//{
-	//	return mapAStar[vec.y][vec.x] == 0;
-	//};
-
-	//BlockAllocator allocator;
-	//int countBlock = 0;
-	//for (int x = 0; x < COUNT_X; x++)
-	//{
-	//	for (int y = 0; y < COUNT_Y; y++)
-	//	{
-	//		if (map[x][y]->GetType() == Obstacle)
-	//			countBlock++;
-	//	}
-	//}
-	//allocator.allocate(countBlock);
-
-	//astar->set_block_allocator(&allocator);
-	//auto path = astar->find(param);
-
-	//return path;
-#pragma endregion
-
-}
-
 void AStarScene::RunAStar()
 {
-#pragma region v1
-	//	path.clear();
-//	Node beginNode;
-//	beginNode.vec.reset(begin.GetVec().x, begin.GetVec().y);
-//
-//	Node destNode;
-//	destNode.vec.reset(destination.GetVec().x, destination.GetVec().y);
-//
-//	std::vector<AStar::Vec2> pathVec2 = FindPathAstar();
-//
-//	for (std::vector<AStar::Vec2>::iterator it = pathVec2.begin(); it != pathVec2.end(); it = std::next(it))
-//	{
-//		path.push_back(map[it->x][it->y]);
-//	}
-//
-//	//draw close list
-//	std::vector<AStar::Vec2> closeVec = astar->get_closed_vec();
-//	for (std::vector<AStar::Vec2>::iterator it = closeVec.begin(); it != closeVec.end(); it = std::next(it))
-//	{
-//		map[it->x][it->y]->SetType(Closed);
-//	}
-//
-//	//draw opened list
-//	std::vector<AStar::Vec2> openVec = astar->get_opened_vec();
-//	for (std::vector<AStar::Vec2>::iterator it = openVec.begin(); it != openVec.end(); it = std::next(it))
-//	{
-//		map[it->x][it->y]->SetType(Opened);
-//	}
-//
-//	//clear
-//	this->astar->clear();
-#pragma endregion
-
 	path.clear();
 	Node beginNode;
 	beginNode.SetX((int)begin.GetVec().x);
@@ -174,13 +113,21 @@ void AStarScene::RunAStar()
 	destNode.SetX((int)destination.GetVec().x);
 	destNode.SetY((int)destination.GetVec().y);
 
-	array<array<Node, (Y_MAX / Y_STEP)>, (X_MAX / X_STEP)> mapAstar;
+	AstarResuit resuit = astar->findPath(beginNode, destNode);
 
-	astar->makePath(mapAstar, destNode);
+	//draw closed, opened list
+	for (std::vector<Node> ::iterator it = resuit.closeList.begin(); it != resuit.closeList.end(); it = next(it))
+	{
+		map[it->x][it->y]->SetType(Closed);
+	}
 
-	vector<Node> pathNode = astar->aStar(beginNode, destNode);
+	for (std::vector<Node> ::iterator it = resuit.openList.begin(); it != resuit.openList.end(); it = next(it))
+	{
+		map[it->x][it->y]->SetType(Opened);
+	}
 
-	for (vector<Node> ::iterator it = pathNode.begin(); it != pathNode.end(); it = next(it))
+	//set path
+	for (std::vector<Node> ::iterator it = resuit.path.begin(); it != resuit.path.end(); it = next(it))
 	{
 		path.push_back(map[it->x][it->y]);
 	}

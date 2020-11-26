@@ -12,11 +12,16 @@ public:
 	float fCost;
 	friend class Astar;
 public:
-	int GetX() { return x; }
-	int GetY() { return y; }
 	void SetX(int value) { x = value; }
 	void SetY(int value) { y = value; }
-	bool operator < (const Node& n) const;
-	bool operator > (const Node& n) const;
-	friend std::ostream& operator << (std::ostream& os, const Node& n);
+
+	bool Node::operator < (const Node& n) const
+	{
+		return fCost < n.fCost;
+	}
+
+	bool Node::operator > (const Node& n) const
+	{
+		return fCost > n.fCost;
+	}
 };

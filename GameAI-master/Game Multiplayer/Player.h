@@ -6,7 +6,6 @@
 #include <vector>
 #include "GameLog.h"
 #include "GameDefine.h"
-
 using namespace std;
 
 class Player : public Entity
@@ -61,4 +60,5 @@ public:
 	bool IsMoving() { return _isMoving; }
 	void Move(D3DXVECTOR2 destination);
 	void Stop(D3DXVECTOR2 preDestination, D3DXVECTOR2 currentDestination);
+
 };

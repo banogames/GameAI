@@ -33,7 +33,7 @@ bool Astar::isObstacle(int x, int y, std::array < std::array<int, (Y_MAX / Y_STE
 
 bool Astar::isValidAndNotObs(int x, int y)
 {
-	return isValid(x, y) && isObstacle(x, y, map);
+	return isValid(x, y) && !isObstacle(x, y, map);
 }
 
 bool Astar::isDestination(int x, int y, Node dest) {
@@ -185,51 +185,100 @@ AstarResuit Astar::findPath(Node begin, Node dest)
 		closedList[x][y] = true;
 		resuit.closeList.push_back(node);
 
-#pragma region  for xung quanh
-for (int newX = -1; newX <= 1; newX++)
-{
-	for (int newY = -1; newY <= 1; newY++)
-	{
-		double gNew, hNew, fNew;
-		if (isValid(x + newX, y + newY)) //kiểm tra hợp lệ
+		if (abs(begin.x - dest.x) > abs(begin.y - dest.y)) 
 		{
-			if (!isObstacle(x + newX, y + newY, map)) //kiểm tra tồn tại
+#pragma region  for xung quanh x->y
+			for (int newX = -1; newX <= 1; newX++)
 			{
-				if (isDestination(x + newX, y + newY, dest) && (newX == 0 || newY == 0)) //tới điểm cuối
+				for (int newY = -1; newY <= 1; newY++)
 				{
-					//Destination found - make path
-					_mapNode[x + newX][y + newY].parentX = x;
-					_mapNode[x + newX][y + newY].parentY = y;
-					destinationFound = true;
-					resuit.path = makePath(_mapNode, dest);
-					return resuit;
-				}
-				else if (closedList[x + newX][y + newY] == false)
-				{
-					if (newX == 0 || newY == 0)
-						gNew = node.gCost + 1;
-					else continue;
-					hNew = calculateH(x + newX, y + newY, dest);
-					fNew = gNew + hNew;
-					 //Check if this path is better than the one already present
-					if (_mapNode[x + newX][y + newY].fCost == FLT_MAX ||
-						_mapNode[x + newX][y + newY].fCost > fNew)
+					double gNew, hNew, fNew;
+					if (isValid(x + newX, y + newY)) //kiểm tra hợp lệ
 					{
-						//Update the details of this neighbour node
-						_mapNode[x + newX][y + newY].fCost = fNew;
-						_mapNode[x + newX][y + newY].gCost = gNew;
-						_mapNode[x + newX][y + newY].hCost = hNew;
-						_mapNode[x + newX][y + newY].parentX = x;
-						_mapNode[x + newX][y + newY].parentY = y;
-						resuit.openList.emplace_back(_mapNode[x + newX][y + newY]);
+						if (!isObstacle(x + newX, y + newY, map)) //kiểm tra tồn tại
+						{
+							if (isDestination(x + newX, y + newY, dest) && (newX == 0 || newY == 0)) //tới điểm cuối
+							{
+								//Destination found - make path
+								_mapNode[x + newX][y + newY].parentX = x;
+								_mapNode[x + newX][y + newY].parentY = y;
+								destinationFound = true;
+								resuit.path = makePath(_mapNode, dest);
+								return resuit;
+							}
+							else if (closedList[x + newX][y + newY] == false)
+							{
+								if (newX == 0 || newY == 0)
+									gNew = node.gCost + 2.5f;
+								else continue;
+								hNew = calculateH(x + newX, y + newY, dest);
+								fNew = gNew + hNew;
+								//Check if this path is better than the one already present
+								if (_mapNode[x + newX][y + newY].fCost == FLT_MAX ||
+									_mapNode[x + newX][y + newY].fCost > fNew)
+								{
+									//Update the details of this neighbour node
+									_mapNode[x + newX][y + newY].fCost = fNew;
+									_mapNode[x + newX][y + newY].gCost = gNew;
+									_mapNode[x + newX][y + newY].hCost = hNew;
+									_mapNode[x + newX][y + newY].parentX = x;
+									_mapNode[x + newX][y + newY].parentY = y;
+									resuit.openList.emplace_back(_mapNode[x + newX][y + newY]);
+								}
+							}
+						}
 					}
 				}
 			}
-		}
-	}
-}
 #pragma endregion
-		
+		}
+		else 
+		{
+#pragma region  for xung quanh y->x
+			for (int newY = -1; newY <= 1; newY++)
+			{
+				for (int newX = -1; newX <= 1; newX++)
+				{
+					double gNew, hNew, fNew;
+					if (isValid(x + newX, y + newY)) //kiểm tra hợp lệ
+					{
+						if (!isObstacle(x + newX, y + newY, map)) //kiểm tra tồn tại
+						{
+							if (isDestination(x + newX, y + newY, dest) && (newX == 0 || newY == 0)) //tới điểm cuối
+							{
+								//Destination found - make path
+								_mapNode[x + newX][y + newY].parentX = x;
+								_mapNode[x + newX][y + newY].parentY = y;
+								destinationFound = true;
+								resuit.path = makePath(_mapNode, dest);
+								return resuit;
+							}
+							else if (closedList[x + newX][y + newY] == false)
+							{
+								if (newX == 0 || newY == 0)
+									gNew = node.gCost + 2.5f;
+								else continue;
+								hNew = calculateH(x + newX, y + newY, dest);
+								fNew = gNew + hNew;
+								//Check if this path is better than the one already present
+								if (_mapNode[x + newX][y + newY].fCost == FLT_MAX ||
+									_mapNode[x + newX][y + newY].fCost > fNew)
+								{
+									//Update the details of this neighbour node
+									_mapNode[x + newX][y + newY].fCost = fNew;
+									_mapNode[x + newX][y + newY].gCost = gNew;
+									_mapNode[x + newX][y + newY].hCost = hNew;
+									_mapNode[x + newX][y + newY].parentX = x;
+									_mapNode[x + newX][y + newY].parentY = y;
+									resuit.openList.emplace_back(_mapNode[x + newX][y + newY]);
+								}
+							}
+						}
+					}
+				}
+			}
+#pragma endregion
+		}	
 	}
 	if (destinationFound == false) {
 		std::cout << "Destination not found" << std::endl;
@@ -297,4 +346,64 @@ bool Astar::RandomoPosValidAround(Vec2 *pos0, Vec2 *pos, int radius)
 	}
 	return false;
 }
+
+std::vector<Vec2*> Astar::GetListVecInAxisValid(int x, int y, int xRound, int yRound)
+{
+	std::vector<Vec2*> validList;
+
+	//xét bề ngang
+	int _dtX = xRound < x ? 1 : -1;
+	while (xRound!=x)
+	{
+		if (isValidAndNotObs(xRound, y))
+		{
+			Vec2* vec = new Vec2(xRound, y);
+			validList.emplace_back(vec);
+		}
+		xRound += _dtX;
+	}
+
+	//xét bề dọc
+	int _dtY = yRound < y ? 1 : -1;
+	while (yRound!=y)
+	{
+		if (isValidAndNotObs(x, yRound))
+		{
+			Vec2* vec = new Vec2(x, yRound);
+			validList.emplace_back(vec);
+		}
+		yRound += _dtY;
+	}
+	return validList;
+}
+
+double calculateVecH(Vec2 vec0, Vec2 vec1) {
+	double H = (sqrt((vec0.x - vec1.x)*(vec0.x - vec1.x)
+		+ (vec0.y - vec1.y))*(vec0.y - vec1.y));
+	return H;
+}
+
+Vec2* Astar::RandomVecInAxisValid(Vec2 vecMine, Vec2 vecOther, int range)
+{
+	int xRound = vecMine.x < vecOther.x ? vecMine.x - range : vecOther.x + range;
+	int yRound = vecMine.y < vecOther.y ? vecMine.y - range : vecMine.y + range;
+	std::vector<Vec2*> validList = GetListVecInAxisValid(vecOther.x, vecOther.y, xRound, yRound);
+	Vec2* vecResult = new Vec2(vecOther.x, vecOther.y);
+	double dirResult;
+	if (!validList.empty())
+	{
+		vecResult = validList.at(0);
+		dirResult = calculateVecH(vecMine, *vecResult);
+		for (auto vec : validList)
+		{
+			if (calculateVecH(vecMine, *vec) < dirResult)
+			{
+				vecResult = vec;
+				dirResult = calculateVecH(vecMine, *vec);
+			}
+		}
+	}
+	return vecResult;
+}
+
 

@@ -11,6 +11,7 @@
 const int COUNT_X = X_MAX / X_STEP;
 const int COUNT_Y = Y_MAX / Y_STEP;
 
+const bool IS_DRAW_PATH_ASTAR = false; //test
 
 // [0, 10] => 4 bit
 enum EntityType
@@ -26,6 +27,12 @@ enum EntityType
 	ET_UpgradeItem,
 	ET_NPC,
 	ET_Eagle
+};
+
+enum BulletType 
+{
+	BL_Player,
+	BL_NPC
 };
 
 // [0, 4] => 3 bit
@@ -48,7 +55,8 @@ enum TileType
 	Begin,
 	Destination,
 	Path,
-	Path_Dodging
+	Path_Dodging,
+	Path_Attacking
 };
 
 struct  Vec2

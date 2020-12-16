@@ -12,6 +12,7 @@ class Player : public Entity
 {
 	const float _speed = 130.f;
 	Direction _direction = D_Stand;
+	Direction _directionBullet = D_Stand; //lưu hướng bắn đạn
 	bool _isShield = false;
 	int _level = 1;
 	int _score = 0;
@@ -19,6 +20,8 @@ class Player : public Entity
 
 	const float _time_BetweenShoots = 0.7f;
 	float _count_Shoot = 0.0f;
+	int _currentBullet;
+	vector<Bullet*> _bulletList;
 
 	bool _isMoving = false;
 

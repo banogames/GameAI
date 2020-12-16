@@ -32,6 +32,15 @@ NPC::NPC()
 	Position = D3DXVECTOR2(300.f, 300.f);
 
 	_isMoving = true;
+
+	// tạo 6 bullet cho player
+	for (int i = 0; i < 6; i++)
+	{
+		Bullet* bullet = new Bullet();
+		_bulletList.push_back(bullet);
+	}
+
+	_isAutoShoot = true;
 }
 
 void NPC::SetPosition(float x, float y) 
@@ -41,16 +50,31 @@ void NPC::SetPosition(float x, float y)
 
 void NPC::Update(float _dt)
 {
+	for (auto bullet : _bulletList)
+	{
+		bullet->Update(_dt);
+	}
+
 	if (IsDeleted)
 		return;
 
 	Position += Velocity * _dt;
 
 	AutoMove(_dt);
+
+	AutoShoot(_dt);
 }
 
 void NPC::Draw()
 {
+	if (!_bulletList.empty())
+	{
+		for (auto bullet : _bulletList)
+		{
+			bullet->Draw();
+		}
+	}
+
 	if (IsDeleted)
 		return;
 
@@ -71,6 +95,12 @@ void NPC::DrawPath()
 
 bool NPC::CheckCollision(Entity * e)
 {
+	//check collision bullet
+	for (auto bullet : _bulletList)
+	{
+		bullet->CheckCollision(e);
+	}
+
 	if (IsDeleted)
 		return false;
 
@@ -83,40 +113,28 @@ bool NPC::CheckCollision(Entity * e)
 		//tách ra khỏi va chạm
 		if (cR.Side == CS_Left)
 		{
-			Position.x += (float)(cR.Rect.right - cR.Rect.left) + 10;
+			Position.x += (float)(cR.Rect.right - cR.Rect.left) + 1;
 		}
 		else if (cR.Side == CS_Right)
 		{
-			Position.x -= (float)(cR.Rect.right - cR.Rect.left) - 10;
+			Position.x -= (float)(cR.Rect.right - cR.Rect.left) - 1;
 		}
 		else if (cR.Side == CS_Top)
 		{
-			Position.y += (float)(cR.Rect.bottom - cR.Rect.top) + 10;
+			Position.y += (float)(cR.Rect.bottom - cR.Rect.top) + 1;
 		}
 		else if (cR.Side == CS_Bottom)
 		{
-			Position.y -= (float)(cR.Rect.bottom - cR.Rect.top) - 10;
+			Position.y -= (float)(cR.Rect.bottom - cR.Rect.top) - 1;
 		}
 
-		Astar::getInstance()->SetValue(Position.x / X_STEP, Position.y / Y_STEP, 2);
+		//Astar::getInstance()->SetValue(Position.x / X_STEP, Position.y / Y_STEP, 2);
 
-		D3DXVECTOR2 posOther = D3DXVECTOR2();
-		posOther.x = cR.Rect.right - cR.Rect.left;
-		posOther.y = cR.Rect.bottom - cR.Rect.top;
 
-		/*Vec2 vecOther = Vec2();
-		vecOther.x = (int)(posOther.x / X_STEP));
-		vecOther.y = (int)(posOther.y / Y_STEP));
-
-		posOther.x = vecOther.x * X_STEP;
-		posOther.y = vecOther.y * Y_STEP;*/
-
-		Astar::getInstance()->SetValue(posOther.x / X_STEP, posOther.y / Y_STEP, 2);
-	
 		//kiểm tra node hiện tại, node trước => valid sẽ tốc biến về đó
 		if (!path.empty())
 		{
-			for (int i = -1; i <= 1; i++)
+			for (int i = -1; i <= 0; i++)
 			{
 				if (currentNodeIndex + i < path.size())
 				{
@@ -131,7 +149,7 @@ bool NPC::CheckCollision(Entity * e)
 
 		printLog("collision player");
 
-		if (!_isCollision) 
+		if (!_isCollision)
 		{
 			RunDodging(); //chạy né va chạm		
 		}
@@ -209,38 +227,158 @@ void NPC::ApplyVelocity()
 	}
 }
 
+template < typename T>
+std::pair<bool, int > findInVector(const std::vector<T>  & vecOfElements, const T  & element)
+{
+	std::pair<bool, int > result;
+	// Find given element in vector
+	auto it = std::find(vecOfElements.begin(), vecOfElements.end(), element);
+	if (it != vecOfElements.end())
+	{
+		result.second = distance(vecOfElements.begin(), it);
+		result.first = true;
+	}
+	else
+	{
+		result.first = false;
+		result.second = -1;
+	}
+	return result;
+}
+
 void NPC::AutoMove(float dt)
 {
-	if (!_isMoving && !_isCollision)
+	if (_isCollision)
 	{
 		_timeWaittingMove += dt;
-		if (_timeWaittingMove > 2)
+		if (_timeWaittingMove > 3) //đợi 3s rời va chạm
 		{
-			RunAstar();
+			_timeWaittingMove = 0;
+			RunDodging();
 			return;
 		}
+		return;
 	}
 
-	if (_isCollision) 
+	if (_stateRun == S_Attacking)
 	{
-		Stop();
+		_timeWaittingMove += dt;
+		if (_timeWaittingMove > 2) //đợi 2s bắn
+		{
+			_timeWaittingMove = 0;
+			_stateRun = S_RunAstar;
+			return;
+		}
 		return;
+	}
+
+	if (_isPlayerInRange && _stateRun != S_RunAttack)
+	{
+		int posX, posY;
+		posX = (Position.x / X_STEP);
+		posY = (Position.y / Y_STEP);
+
+		if (!path.empty()) 
+		{
+			//xóa node cũ
+			if (currentNodeIndex < path.size())
+			{
+				Astar::getInstance()->SetValue(path.at(currentNodeIndex)->GetVec().x, path.at(currentNodeIndex)->GetVec().y, 0);
+			}
+		}
+		
+		_stateRun = S_RunAttack;
+
+		//sort từ gần đến xa NPC (ưu tiên đi tới điểm gần trước)
+		int xRound = posX < vecPlayer->x ? posX - _rangeAttack : posX + _rangeAttack;
+		int yRound = posY < vecPlayer->y ? posY - _rangeAttack : posY + _rangeAttack;
+		std::vector<Vec2*> validList = Astar::getInstance()->GetListVecInAxisValid(vecPlayer->x, vecPlayer->y, xRound, yRound);
+		Vec2 vecAttack;
+		if (!validList.empty())
+		{
+			//sort lại theo list có khoảng cách nhỏ nhất (buble sort)
+			for (int i = 0; i < validList.size(); i++) 
+			{
+				// Last i elements are already in place  
+				for (int j = 0; j < validList.size() - i - 1; j++)
+				{
+					if (vec->distance(*validList.at(i)) < vec->distance(*validList.at(j)))
+					{
+						//thay đổi giá trị
+						Vec2 vecTemp;
+						vecTemp.x = validList.at(i)->x;
+						vecTemp.y = validList.at(i)->y;
+
+						validList.at(i)->x = validList.at(j)->x;
+						validList.at(i)->y = validList.at(j)->y;
+
+						validList.at(j)->x = vecTemp.x;
+						validList.at(j)->y = vecTemp.y;
+					}
+				}		
+			}
+				
+			for (auto vec : validList)
+			{
+				PathAstar(vec->x, vec->y);
+				if (!path.empty())
+				{
+					printLog("Move attack");
+					vecAttack.x = vec->x;
+					vecAttack.y = vec->y;		
+					break;
+				}
+			}
+
+			//xoay mặt về hướng player, lưu hướng bắn
+			if (vecPlayer->x == vecAttack.x)
+			{
+				_directionAttack = vecPlayer->y > vecAttack.y ? D_Down : D_Up;
+			}
+			else if (vecPlayer->y == vecAttack.y)
+			{
+				_directionAttack = vecPlayer->x > vecAttack.x ? D_Right : D_Left;
+			}
+			else
+			{
+				_directionAttack = _direction;
+			}
+		}
+
 	}
 	
 	if (!path.empty())
 	{
 		if (currentNodeIndex >= path.size())
 		{
-			RunAstar();
+			if (_stateRun != S_RunAttack)
+			{
+				//bỏ giá trị node cuối
+				Astar::getInstance()->SetValue(path[path.size() -1]->GetVec().x, path[path.size() - 1]->GetVec().y, 0);
+
+				RunAstar();
+			}
+			else
+			{
+				_stateRun = S_Attacking; //đứng lại bắn player
+				_direction = _directionAttack;
+				_directionBullet = _directionAttack;
+				ApplyAnimation();
+				Stop();
+			}
 		}
 		else
 		{			
 			Move(path[currentNodeIndex]->GetPosition());
 			if (!_isMoving) 
 			{
+				//bỏ giá trị node đuôi
 				Astar::getInstance()->SetValue(path[currentNodeIndex]->GetVec().x, path[currentNodeIndex]->GetVec().y, 0);
-				//bỏ old pos, add new pos
+				
+				//tăng node
 				currentNodeIndex++;
+
+				//set giá trị node mới
 				if (currentNodeIndex < path.size())
 					Astar::getInstance()->SetValue(path[currentNodeIndex]->GetVec().x, path[currentNodeIndex]->GetVec().y, 2);
 			}
@@ -248,9 +386,22 @@ void NPC::AutoMove(float dt)
 	}
 	else
 	{
-		RunAstar();
+		if (_stateRun != S_RunAttack) 
+		{
+			RunAstar();
+		}
+		else
+		{
+			_stateRun = S_Attacking; //đứng lại bắn player
+				//xoay mặt về hướng player
+			_direction = _directionAttack;
+			_directionBullet = _directionAttack;
+			ApplyAnimation();
+			Stop();
+		}
 	}	
 }
+
 
 void NPC::PredictCollision() 
 {
@@ -265,7 +416,7 @@ void NPC::PredictCollision()
 				for (unsigned i = currentNodeIndex + 1; i < currentNodeIndex + 4; i++)
 				{
 					if (i >= path.size()) break;
-					if (Astar::getInstance()->isValidAndNotObs(path.at(i)->GetVec().x, path.at(i)->GetVec().y))
+					if (Astar::getInstance()->isObstacle(path.at(i)->GetVec().x, path.at(i)->GetVec().y, Astar::getInstance()->map))
 					{
 						RunDodging();
 						break;
@@ -283,20 +434,32 @@ void NPC::RunDodging()
 	pos0->x = Position.x / X_STEP;
 	pos0->y = Position.y / Y_STEP;
 
-	//random 1 node xung quanh, bán kính 5 ô
-	if (Astar::getInstance()->RandomoPosValidAround(pos0, pos, 5)) {
+	//nếu còn va chạm kiểm tra 9 node xung quanh, node nào có thể tới => tốc biến tới node đó (node không có va chạm)
+	if (_isCollision) 
+	{
+		Vec2 *pos = new Vec2();
+		if (Astar::getInstance()->RandomoPosValidAround(pos0, pos, 1))
+		{
+			Position.x = (pos->x + 0.5)* X_STEP;
+			Position.y = (pos->y + 0.5)* Y_STEP;
+		}
+	}
+		
+	//random 1 node xung quanh, bán kính 4 ô
+	if (Astar::getInstance()->RandomoPosValidAround(pos0, pos, 4)) {
 		//random path xung quanh
 
 		//lưu node cuối lại, sau khi end path né => astar tới node cuối
 		if (!_isDodging) 
 		{
-			if (!path.empty()) {
+			if (!path.empty()) 
+			{
 				_desSave->x = (path.back())->GetVec().x;
 				_desSave->y = (path.back())->GetVec().y;
 			}
 		}
-
-		_isDodging = true;
+		_isDodging = true;		
+		_stateRun = S_RunDodging;
 		PathAstar(pos->x, pos->y);
 	}
 }
@@ -304,6 +467,7 @@ void NPC::RunDodging()
 
 void NPC::RunAstar() 
 {
+	_stateRun = S_RunAstar;
 	if (!_isDodging) //đang không phải né
 	{
 		Vec2 *pos = new Vec2();
@@ -350,14 +514,22 @@ void NPC::PathAstar(int posX, int posY)
 
 	for (std::vector<Node> ::iterator it = resuit.path.begin(); it != resuit.path.end(); it = next(it))
 	{
-		if (!_isDodging) 
+		if (IS_DRAW_PATH_ASTAR) 
 		{
-			Astar::getInstance()->mapGrid[it->x][it->y]->SetType(Path);
-		}		
-		else
-		{
-			Astar::getInstance()->mapGrid[it->x][it->y]->SetType(Path_Dodging);
+			switch (_stateRun)
+			{
+			case S_RunAstar:
+				Astar::getInstance()->mapGrid[it->x][it->y]->SetType(Path);
+				break;
+			case S_RunDodging:
+				Astar::getInstance()->mapGrid[it->x][it->y]->SetType(Path_Dodging);
+				break;
+			case S_RunAttack:
+				Astar::getInstance()->mapGrid[it->x][it->y]->SetType(Path_Attacking);
+				break;
+			}
 		}
+
 		path.push_back(Astar::getInstance()->mapGrid[it->x][it->y]);
 	}
 
@@ -381,21 +553,25 @@ void NPC::Move(D3DXVECTOR2 destination)
 	if (destination.x - Position.x < -0.5)
 	{
 		_direction = D_Left;
+		_directionBullet = D_Left;
 		_isMoving = true;
 	}
 	else if (destination.x - Position.x > 0.5)
 	{
 		_direction = D_Right;
+		_directionBullet = D_Right;
 		_isMoving = true;
 	}
 	else if (destination.y - Position.y < -0.5)
 	{
 		_direction = D_Up;
+		_directionBullet = D_Up;
 		_isMoving = true;
 	}
 	else if (destination.y - Position.y > 0.5)
 	{
 		_direction = D_Down;
+		_directionBullet = D_Down;
 		_isMoving = true;
 	}
 	else
@@ -409,6 +585,10 @@ void NPC::Move(D3DXVECTOR2 destination)
 	ApplyAnimation();
 	ApplyVelocity();
 	PredictCollision();
+
+	//cập nhật vec
+	vec->x = Position.x / X_STEP;
+	vec->y = Position.y / Y_STEP;
 }
 
 void NPC::Stop() 
@@ -424,5 +604,58 @@ void NPC::SetIsCollision(bool isCollision) {
 	_isCollision = isCollision;
 	if (_isCollision) Stop();
 }
+
+void NPC::MoveGridAstar(int x, int y)
+{
+	PathAstar(x, y);
+}
+
+#pragma region  SHOOT
+
+void NPC::AutoShoot(float dt) 
+{
+	if (!_isAutoShoot) return;
+
+	_timeWaittingShoot += dt;
+	float _timeDelay = (_stateRun == S_RunAttack || _stateRun == S_Attacking) ? _timeDelayShoot/2 : _timeDelayShoot;
+	if (_timeWaittingShoot > _timeDelay)
+	{
+		_timeWaittingShoot = 0;
+		//shot
+		//shoot bullet
+		if (!_bulletList.empty() && _directionBullet != D_Stand)
+		{
+			printLog("Shoot bullet");
+			if (_currentBullet >= _bulletList.size())
+				_currentBullet = 0;
+			_bulletList.at(_currentBullet)->Shoot(Position, _directionBullet);
+			_currentBullet++;
+		}
+	}
+}
+
+void NPC::CheckPlayerInRange(int x, int y) 
+{
+	//kiểm tra player trong tầm bắn
+	int posX, posY;
+	posX = (Position.x / X_STEP);
+	posY = (Position.y / Y_STEP);
+
+	int left, right, top, bottom;
+
+	if (x <= posX + _rangeAttack && x >= posX - _rangeAttack && y <= posY + _rangeAttack && y >= posY - _rangeAttack) {
+		_isPlayerInRange = true;
+
+		vecPlayer->x = x;
+		vecPlayer->y = y;
+	}
+	else
+	{
+		_isPlayerInRange = false;
+	}
+
+}
+
+#pragma endregion
 
 

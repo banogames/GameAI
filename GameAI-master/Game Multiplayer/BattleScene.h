@@ -21,7 +21,7 @@ class BattleScene : public Scene
 {
 	GameMap* _map;
 	Player* _player;
-	vector<Bullet*> _bulletList;
+
 	vector<NPC*> _npcList;
 	vector<Explosion*> _smallExList;
 	vector<Explosion*> _bigExplosionList;

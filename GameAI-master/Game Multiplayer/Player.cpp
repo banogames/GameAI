@@ -33,6 +33,14 @@ Player::Player()
 	default:
 		break;
 	}
+
+	// tạo 6 bullet cho player
+	for (int i = 0; i < 6; i++)
+	{
+		Bullet* bullet = new Bullet();
+		_bulletList.push_back(bullet);
+	}
+
 }
 
 void Player::Update(float _dt)
@@ -43,9 +51,9 @@ void Player::Update(float _dt)
 	if ((Position.x / X_STEP) != (Position.x + Velocity.x * _dt) / X_STEP) 
 	{
 		printLog("astar update pos player");
-		//cập nhật astar
+		//cập nhật astar => xóa điểm cũ cập nhật điểm 
 		Astar::getInstance()->SetValue(Position.x / X_STEP, Position.y / Y_STEP, 0);
-		Astar::getInstance()->SetValue((Position.x + Velocity.x*_dt) / X_STEP, (Position.y + Velocity.y*_dt) / Y_STEP, 2);
+		Astar::getInstance()->SetValue((Position.x + Velocity.x*_dt) / X_STEP, (Position.y + Velocity.y*_dt) / Y_STEP, 3);
 	}
 
 	Position += Velocity * _dt;
@@ -53,6 +61,11 @@ void Player::Update(float _dt)
 	if (_isShield)
 		_shieldAnimation->Update(_dt);
 
+
+	for (auto bullet : _bulletList)
+	{
+		bullet->Update(_dt);
+	}
 }
 
 void Player::HandleKeyboard(std::map<int, bool> keys, float _dt)
@@ -64,28 +77,40 @@ void Player::HandleKeyboard(std::map<int, bool> keys, float _dt)
 	{
 		_count_Shoot -= _dt;
 	}
-	//if (_count_Shoot < 0 && keys[VK_SPACE]) // gửi data bắn đạn
-	//{
-	//	_count_Shoot += _time_BetweenShoots;
-	//	
-	//	// shoot
-	//}
+	if (_count_Shoot < 0 && keys[VK_SPACE]) // bắn đạn
+	{
+		_count_Shoot = _time_BetweenShoots;
+		
+		//shoot bullet
+		if (!_bulletList.empty() && _directionBullet!= D_Stand) 
+		{
+			printLog("Shoot bullet");
+			if (_currentBullet >= _bulletList.size())
+				_currentBullet = 0;
+			_bulletList.at(_currentBullet)->Shoot(Position, _directionBullet);
+			_currentBullet++;
+		}
+	}
 
 	if (keys[VK_LEFT])
 	{
 		_direction = D_Left;
+		_directionBullet = D_Left;
 	}
 	else if (keys[VK_RIGHT])
 	{
 		_direction = D_Right;
+		_directionBullet = D_Right;
 	}
 	else if (keys[VK_UP])
 	{
 		_direction = D_Up;
+		_directionBullet = D_Up;
 	}
 	else if (keys[VK_DOWN])
 	{
 		_direction = D_Down;
+		_directionBullet = D_Down;
 	}
 	else
 	{
@@ -364,6 +389,14 @@ void Player::Draw()
 		if (_isShield)
 			_shieldAnimation->Draw(Position);
 	}
+
+	if (!_bulletList.empty()) 
+	{
+		for (auto bullet : _bulletList)
+		{
+			bullet->Draw();
+		}
+	}	
 }
 
 void Player::DrawArrow()
@@ -377,6 +410,12 @@ void Player::DrawArrow()
 
 void Player::CheckCollision(Entity * entity)
 {
+	//check collision bullet
+	for (auto bullet : _bulletList)
+	{
+		bullet->CheckCollision(entity);
+	}
+
 	if (IsDeleted)
 		return;
 
@@ -385,21 +424,29 @@ void Player::CheckCollision(Entity * entity)
 	{
 		if (cR.Side == CS_Left)
 		{
-			Position.x += (float)(cR.Rect.right - cR.Rect.left) + 10;
+			Position.x += (float)(cR.Rect.right - cR.Rect.left) + 1;
 		}
 		else if (cR.Side == CS_Right)
 		{
-			Position.x -= (float)(cR.Rect.right - cR.Rect.left) - 10;
+			Position.x -= (float)(cR.Rect.right - cR.Rect.left) - 1;
 		}
 		else if (cR.Side == CS_Top)
 		{
-			Position.y += (float)(cR.Rect.bottom - cR.Rect.top) + 10;
+			Position.y += (float)(cR.Rect.bottom - cR.Rect.top) + 1;
 		}
 		else if (cR.Side == CS_Bottom)
 		{
-			Position.y -= (float)(cR.Rect.bottom - cR.Rect.top) - 10;
+			Position.y -= (float)(cR.Rect.bottom - cR.Rect.top) - 1;
 		}
 
+
+		//kiểm tra đối tượng va chạm
+		//nếu là đạn địch => mất máu
+
 	}
+
+
 }
+
+
 

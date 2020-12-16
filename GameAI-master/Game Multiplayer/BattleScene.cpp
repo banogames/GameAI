@@ -28,45 +28,27 @@ BattleScene::BattleScene()
 	}
 
 	_player = new Player();
-	// tạo 4 bullet cho player
-	for (int i = 0; i < 6; i++)
-	{
-		Bullet* bullet = new Bullet();
-		_bulletList.push_back(bullet);
-	}
+	
 	//set gia tri astar cua palyer
 	Astar::getInstance()->SetValue(_player->Position.x / X_STEP, _player->Position.y / Y_STEP, 2);
 
 	// tạo 3 npcs
-	for (int i = 0; i < 10; i++)
+	for (int i = 0; i < 5; i++)
 	{
 		NPC* npc = new NPC();
 
 		Vec2 *pos = new Vec2();
 		if (Astar::getInstance()->RandomPosValid(pos))
 		{
-			npc->SetPosition((pos->x - 0.5)* X_STEP , (pos->y - 0.5)* Y_STEP);
+			npc->SetPosition((pos->x + 0.5)* X_STEP , (pos->y + 0.5)* Y_STEP);
 		}
 		_npcList.push_back(npc);
 
 		// tạo 1 BULLET cho mỗi NPC
-		Bullet* bullet = new Bullet();
-		_bulletList.push_back(bullet);
+		/*Bullet* bullet = new Bullet();
+		_bulletList.push_back(bullet);*/
 	}
 
-	
-
-	// tạo 10 small explosion
-	for (int i = 0; i < 10; i++)
-	{
-		Explosion* e = new Explosion(false);
-		_smallExList.push_back(e);
-
-		for (auto bullet : _bulletList)
-		{
-			bullet->addExpolostion(e);
-		}
-	}
 
 	// tạo 5 big explosion
 	for (int i = 0; i < 5; i++)
@@ -97,23 +79,9 @@ BattleScene::BattleScene()
 
 void BattleScene::Update(float dt)
 {
-	_player->HandleKeyboard(keyboard, dt);
-
 	for (auto npc : _npcList) // set vận tốc npcs dựa theo direction 
 	{
 		npc->ApplyVelocity();
-	}
-	
-	for (auto bullet : _bulletList) // set vận tốc bullets dựa theo direction
-	{
-		bullet->ApplyVelocity();
-	}	
-
-	_player->Update(dt);
-
-	for (auto npc : _npcList)
-	{
-		npc->Update(dt);
 	}
 
 	if (!_player->IsDeleted)
@@ -122,8 +90,7 @@ void BattleScene::Update(float dt)
 		{
 			if (!npc->IsDeleted)
 			{
-				bool _onColl = false;
-				_player->CheckCollision(npc);
+				bool _onColl = false;			
 				if (npc->CheckCollision(_player)) 
 				{
 					if (_onColl == false)
@@ -140,8 +107,22 @@ void BattleScene::Update(float dt)
 					}
 				}
 				npc->SetIsCollision(_onColl);
+
+				_player->CheckCollision(npc);
+
+				npc->CheckPlayerInRange(_player->Position.x / X_STEP, _player->Position.y / Y_STEP);
 			}
 		}
+
+		for (auto npc : _npcList)
+		{
+			npc->Update(dt);
+		}
+
+		_player->HandleKeyboard(keyboard, dt);
+
+		_player->Update(dt);
+
 	}
 
 	// sau khi có tọa độ mới tại frame này thì check va chạm với gạch
@@ -160,10 +141,7 @@ void BattleScene::Update(float dt)
 
 	// update các object còn lại
 	{
-		for (auto bullet : _bulletList)
-		{
-			bullet->Update(dt);
-		}
+		
 		for (auto explosion : _smallExList)
 		{
 			explosion->Update(dt);
@@ -178,13 +156,29 @@ void BattleScene::Update(float dt)
 	}
 
 
+	//test astar
+	//if (keyboard[VK_SPACE]) 
+	//{
+	//	for (NPC *npc : _npcList) //move ai to player
+	//	{
+	//		npc->MovoToGridAstar(_player->Position.x / X_STEP, _player->Position.y /Y_STEP);
+	//	}
+	//}
+
 }
 
 void BattleScene::Draw()
 {
-	for (NPC *npc : _npcList)
+	_waterBrick->Draw();
+
+	_map->Draw();
+
+	if (IS_DRAW_PATH_ASTAR) 
 	{
-		npc->DrawPath();
+		for (NPC *npc : _npcList)
+		{
+			npc->DrawPath();
+		}
 	}
 
 	for (auto npc : _npcList)
@@ -193,16 +187,6 @@ void BattleScene::Draw()
 	}
 
 	_player->Draw();
-
-
-	_waterBrick->Draw();
-
-	_map->Draw();
-
-	for (auto bullet : _bulletList)
-	{
-		bullet->Draw();
-	}
 
 	for (auto e : _smallExList)
 	{

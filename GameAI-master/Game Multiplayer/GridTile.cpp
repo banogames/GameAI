@@ -46,5 +46,8 @@ void GridTile::SetType(TileType type)
 	case Path_Dodging:
 		color = D3DCOLOR_XRGB(128, 50, 255);
 		break;
+	case Path_Attacking:
+		color = D3DCOLOR_XRGB(255, 180, 0);
+		break;
 	}
 }

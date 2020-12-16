@@ -35,10 +35,26 @@ CollisionResult GameCollision::getCollisionResult(Entity * entity1, Entity * ent
 	RECT rect1 = entity1->getBound();
 	RECT rect2 = entity2->getBound();
 
-	if (rect1.left <= rect2.right &&
-		rect1.right >= rect2.left &&
+	
+	/*(rect1.left <= rect2.right &&
+	rect1.right >= rect2.left &&
 		rect1.top <= rect2.bottom &&
-		rect1.bottom >= rect2.top)
+		rect1.bottom >= rect2.top)*/
+
+	float rect1_w = (rect1.right - rect1.left);
+	float rect1_h = (rect1.bottom - rect1.top);
+	float rect2_w = (rect2.right - rect2.left);
+	float rect2_h = (rect2.bottom - rect2.top);
+
+	float rect1_x = rect1.left + rect1_w / 2;
+	float rect1_y = rect1.top + rect1_h / 2;
+	float rect2_x = rect2.left + rect2_w / 2;
+	float rect2_y = rect2.top + rect2_h / 2;
+
+	if (rect1_x + rect1_w >= rect2_x &&    // r1 right edge past r2 left
+		rect1_x <= rect2_x + rect2_w &&    // r1 left edge past r2 right
+		rect1_y + rect1_h >= rect2_y &&    // r1 top edge past r2 bottom
+		rect1_y <= rect2_y + rect2_h)   // r1 bottom edge past r2 top
 	{
 		result.IsCollided = true;
 	}

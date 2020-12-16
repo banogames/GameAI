@@ -40,7 +40,9 @@ public:
 	AstarResuit findPath(Node player, Node dest);
 	bool RandomPosValid(Vec2 *pos);  //random lấy tọa độ rỗng
 	bool RandomoPosValidAround(Vec2 *pos0, Vec2 *pos, int radius); //random xung quanh 1 điểm với bán kính
-
+	//get list node valid 
+	std::vector<Vec2*> GetListVecInAxisValid(int x, int y, int xRound, int yRound);
+	Vec2* RandomVecInAxisValid(Vec2 vecMine, Vec2 vecOther, int range);
 public:
 	bool isValid(int x, int y);
 	bool isObstacle(int x, int y, std::array < std::array<int, (Y_MAX / Y_STEP)>, (X_MAX / X_STEP)> map);
@@ -51,6 +53,7 @@ public:
 
 	std::vector<Node> makePath(std::array<std::array<Node, (Y_MAX / Y_STEP)>, (X_MAX / X_STEP)> map, Node dest);
 
+	
 };
 
 

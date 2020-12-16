@@ -4,13 +4,27 @@
 #include "Explosion.h"
 #include <vector>
 #include "GridTile.h"
+#include "Bullet.h"
+#include <algorithm> 
+
+enum NPCState
+{
+	S_RunAstar,
+	S_RunDodging,
+	S_RunAttack,
+	S_Attacking
+};
 
 class NPC :public Entity
 {
 	const float _speed = 30.f; //130.f;
 	Direction _direction; // hướng di chuyển
+	Direction _directionAttack = D_Stand; // lưu hướng tấn công
+	Direction _directionBullet = D_Stand; //lưu hướng bắn đạn
+	NPCState _stateRun = S_RunAstar; //lưu hướng bắn đạn
 
 	std::vector<Explosion*> _explosionList; // trỏ đến
+	std::vector<Bullet*> _bulletList;
 
 	Animation* _leftAnimation;
 	Animation* _rightAnimation;
@@ -20,6 +34,8 @@ class NPC :public Entity
 
 	void ApplyAnimation();
 	D3DXVECTOR2 getVelocityByDirection(Direction direction);
+
+	
 
 public:
 	NPC();
@@ -32,6 +48,9 @@ public:
 	void SetPosition(float x, float y);
 
 private:
+	//tọa độ trên astar
+	Vec2* vec = new Vec2();
+
 	std::vector<GridTile*> path;
 	int currentNodeIndex = 0;
 	bool _isMoving = true;
@@ -40,10 +59,6 @@ private:
 
 	float _timeWaittingMove = 0; //đếm thời gian
 	Vec2* _desSave = new Vec2(); //lưu vị trí cuối path
-
-	//bool _isLeavingCollision = false; //nếu đang rời khỏi va chạm thì chỉ có đi tới điểm đó
-	//D3DXVECTOR2 _posLeaveColl = D3DXVECTOR2(); 
-	//void MoveNoPredictCollision(D3DXVECTOR2 destination);
 
 	void AutoMove(float dt);
 	void Move(D3DXVECTOR2 destination);
@@ -59,19 +74,31 @@ private:
 	//dự đoán va chạm
 	void PredictCollision();
 
-	void AutoShoot(); //tự động bắn với tốc độ chậm, => nếu trên đường bắn player thì bắn với tốc độ nhanh
-	bool IsPlayerInRange();	//nếu player ở trong vùng quét => astar tới chỗ có thể bắn được player
-	//chỗ bắn được player tính bằng trục ngang, trục dọc theo gird player
-	//di chuyển tới trục ngang, trục dọc không có vật cản để bắn
+
+	//SHOOT
+	bool _isAutoShoot;
+	float  _timeWaittingShoot;
+	const float _timeDelayShoot = 5; //delay 5s để bắn
+	int _currentBullet;
+	int _rangeAttack =8;
+	bool _isPlayerInRange; //player trong tầm nhắm thì đuổi theo bắn player
+	Vec2* vecPlayer = new Vec2();
+
+	void AutoShoot(float dt); //tự động bắn với tốc độ chậm, => nếu trên đường bắn player thì bắn với tốc độ nhanh
 
 public:
 	void SetIsCollision(bool isCollision);
 
 	//ở ngoài set đường đi cho bot
-	void MovoToGridAstar(GridTile des);
-	void SetAutoMove(bool _autoMove);
+	void MoveGridAstar(int x, int y);
 
+	void CheckPlayerInRange(int x, int y);
+	//nếu player ở trong vùng quét => astar tới chỗ có thể bắn được player
+	//chỗ bắn được player tính bằng trục ngang, trục dọc theo gird player
+	//di chuyển tới trục ngang, trục dọc không có vật cản để bắn
 
 	void DrawPath();
 };
+
+
 

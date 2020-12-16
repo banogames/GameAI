@@ -2,13 +2,15 @@
 
 #include "Entity.h"
 #include "Explosion.h"
+#include "GameCollision.h"
+#include "Astar.h"
 
 class Bullet : public Entity
 {
 	const float _speed = 400.f;
 	Direction _direction;	// hướng bay
 
-	std::vector<Explosion*> explosionList; // trỏ đến
+	Explosion _explosion = new Explosion(false);
 	
 	Animation* _leftAnimation;
 	Animation* _rightAnimation;
@@ -37,12 +39,15 @@ public:
 		_downAnimation->addFrameInfo(FrameInfo(SpriteList::Instance()->Others, 166, 166 + 6, 12, 12 + 8, D3DXVECTOR2(3.f, 4.f)));
 
 		_currentAnimation = _leftAnimation;
+
 	}
 	
 	~Bullet() { }
 
 	void Update(float _dt) override
 	{
+		_explosion.Update(_dt);
+
 		if (IsDeleted)
 			return;
 		
@@ -51,15 +56,51 @@ public:
 
 	void Draw() override
 	{
+		_explosion.Draw();
+
 		if (IsDeleted)
 			return;
 
 		_currentAnimation->Draw(Position);
+
+	}
+
+	void CheckCollision(Entity * entity)
+	{
+		if (IsDeleted)
+			return;
+		CollisionResult cR = GameCollision::getCollisionResult(this, entity);
+		if (cR.IsCollided)
+		{
+			IsDeleted = true;
+			_explosion.Spawn(Position);
+
+			//kiểm tra đối tượng va chạm với đạn
+			switch (entity->getType())
+			{
+				//nếu viên đạn của NPC bắn nổ brick => cập nhật lại astar tới điểm lưu
+			case ET_NormalBrick:
+				entity->IsDeleted = true;
+				//destroy brick => cập nhật lại astar chỗ brick nổ
+				Astar::getInstance()->SetValue(entity->Position.x / X_STEP, entity->Position.y / Y_STEP, 0);
+				break;
+			default:
+				break;
+			}
+		}
 	}
 
 	void MakeCollision(Entity* _en) override
 	{
 		IsDeleted = true;
+	}
+
+	void Shoot(D3DXVECTOR2 pos, Direction _dir)
+	{
+		Position = pos;
+		setDirection(_dir);
+		IsDeleted = false;
+		ApplyVelocity();
 	}
 
 	// thay đổi vận tốc và animation đựa theo hướng bay
@@ -107,9 +148,6 @@ public:
 		}
 	}
 
-	void addExpolostion(Explosion* e)
-	{
-		explosionList.push_back(e);
-	}
 };
+
 

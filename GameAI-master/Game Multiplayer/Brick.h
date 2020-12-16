@@ -16,8 +16,7 @@ public:
 	void Draw() {
 		if (!IsDeleted) {
 			_animation->Draw(Position);
-		}
-			
+		}	
 	}
 
 // các hàm hỗ trợ
@@ -25,8 +24,8 @@ protected:
 	void BaseInit(D3DXVECTOR2 position)
 	{
 		Position = position;
-		_width = 32;
-		_height = 32;
+		_width = 30;
+		_height = 30;
 		_animation = new Animation();
 	}
 };

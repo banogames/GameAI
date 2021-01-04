@@ -10,7 +10,7 @@ protected:
 	LPDIRECT3DTEXTURE9 _texture;
 	D3DXMATRIX _matrix; // use for Draw
 
-	D3DXVECTOR3 _position = D3DXVECTOR3(0.0f, 0.0f, 0.0f);
+	
 	D3DXVECTOR3 _center = D3DXVECTOR3(0.0f, 0.0f, 0.0f); // sprite center when you Draw it
 	RECT _rect;
 	D3DXVECTOR2 _scale = D3DXVECTOR2(1.0f, 1.0f);
@@ -20,6 +20,9 @@ protected:
 	D3DXVECTOR2 _offset = D3DXVECTOR2(0.0f, 0.0f);
 
 public:
+
+	D3DXVECTOR3 _position = D3DXVECTOR3(0.0f, 0.0f, 0.0f);
+
 	Sprite(const char* path, const D3DCOLOR &subColor = NULL);
 	~Sprite();
 	void Draw(const D3DCOLOR &color = D3DCOLOR_ARGB(255, 255, 255, 255));

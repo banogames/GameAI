@@ -7,9 +7,20 @@
 #include "AStarScene.h"
 #include <stdio.h>
 
-Game::Game()
+//Game::Game()
+//{
+//	SceneManager::Instance()->ReplaceScene(new BattleScene());
+//	//SceneManager::Instance()->ReplaceScene(new AStarScene());
+//
+//	InitLoop();
+//}
+
+Game::Game(GraphicsDevice* gDevice)
 {
-	SceneManager::Instance()->ReplaceScene(new BattleScene());
+	BattleScene *scene = new BattleScene();
+	scene->InitCamera(gDevice);
+	SceneManager::Instance()->ReplaceScene(scene);
+
 	//SceneManager::Instance()->ReplaceScene(new AStarScene());
 
 	InitLoop();

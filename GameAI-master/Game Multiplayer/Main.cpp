@@ -10,6 +10,10 @@
 #include "GameTime.h"
 #include "SceneManager.h"
 #include "Game.h"
+#include "GraphicsDevice.h"
+
+#include <stdlib.h>    
+#include <time.h>       /* time */
 
 using namespace std;
 
@@ -19,18 +23,21 @@ using namespace std;
 #define KEYBOARD_BUFFERD_SIZE 1024
 
 int InitWindow(int cmdShow);
-int InitDevice();
+//int InitDevice();
 LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam);
 
-LPDIRECT3D9             _direct3D9;
-LPD3DXSPRITE            _spriteHandler;
-PDIRECT3D9              _d3d;
-LPDIRECT3DDEVICE9       _device;
+//LPDIRECT3D9             _direct3D9;
+//LPD3DXSPRITE            _spriteHandler;
+//PDIRECT3D9              _d3d;
+//LPDIRECT3DDEVICE9       _device;
 HINSTANCE               _hInstance;
 int                     _cmdShow;
 
+GraphicsDevice *device;
+
 int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine, int cmdShow)
 {
+	srand(time(0));
 	_hInstance = hInstance;
 	InitWindow(cmdShow);
 
@@ -73,41 +80,43 @@ int InitWindow(int cmdShow)
 	ShowWindow(hWnd, cmdShow);
 	UpdateWindow(hWnd);
 
-	if (InitDevice())
+	device = new GraphicsDevice();
+
+	if (device->InitDevice())
 	{
-		Game *game = new Game();
+		Game *game = new Game(device);
 	}
 
 	return 0;
 }
 
-int InitDevice()
-{
-	_d3d = Direct3DCreate9(D3D_SDK_VERSION);
-	D3DPRESENT_PARAMETERS d3dpp;
-
-	ZeroMemory(&d3dpp, sizeof(d3dpp));
-
-	d3dpp.Windowed = TRUE;
-	d3dpp.SwapEffect = D3DSWAPEFFECT_DISCARD;
-	d3dpp.BackBufferFormat = D3DFMT_A8R8G8B8;
-	d3dpp.BackBufferCount = 1;
-	d3dpp.BackBufferWidth = GameGlobal::Width;
-	d3dpp.BackBufferHeight = GameGlobal::Height;
-
-	HRESULT dvresult = _d3d->CreateDevice(D3DADAPTER_DEFAULT,
-		D3DDEVTYPE_HAL,
-		GameGlobal::Window,
-		D3DCREATE_SOFTWARE_VERTEXPROCESSING,
-		&d3dpp,
-		&_device);
-	GameGlobal::Device = _device;
-
-	D3DXCreateSprite(GameGlobal::Device, &_spriteHandler);
-	GameGlobal::XSprite = _spriteHandler;
-
-	return 1;
-}
+//int InitDevice()
+//{
+//	_d3d = Direct3DCreate9(D3D_SDK_VERSION);
+//	D3DPRESENT_PARAMETERS d3dpp;
+//
+//	ZeroMemory(&d3dpp, sizeof(d3dpp));
+//
+//	d3dpp.Windowed = TRUE;
+//	d3dpp.SwapEffect = D3DSWAPEFFECT_DISCARD;
+//	d3dpp.BackBufferFormat = D3DFMT_A8R8G8B8;
+//	d3dpp.BackBufferCount = 1;
+//	d3dpp.BackBufferWidth = GameGlobal::Width;
+//	d3dpp.BackBufferHeight = GameGlobal::Height;
+//
+//	HRESULT dvresult = _d3d->CreateDevice(D3DADAPTER_DEFAULT,
+//		D3DDEVTYPE_HAL,
+//		GameGlobal::Window,
+//		D3DCREATE_SOFTWARE_VERTEXPROCESSING,
+//		&d3dpp,
+//		&_device);
+//	GameGlobal::Device = _device;
+//
+//	D3DXCreateSprite(GameGlobal::Device, &_spriteHandler);
+//	GameGlobal::XSprite = _spriteHandler;
+//
+//	return 1;
+//}
 
 LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 {

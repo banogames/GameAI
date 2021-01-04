@@ -42,7 +42,7 @@ void AStarScene::OnLeftMouseDown(float x, float y)
 void AStarScene::SetObstacle(int x, int y) 
 {
 	map[x][y]->SetType(Obstacle);
-	astar->SetValue(x, y, 1);
+	astar->SetValue(x, y, VALUE_ASTAR_BRICK);
 }
 
 void AStarScene::OnRightMouseDown(float x, float y)

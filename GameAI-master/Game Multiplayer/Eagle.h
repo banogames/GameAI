@@ -11,9 +11,10 @@ public:
 	{
 		_type = ET_Eagle;
 		Position = position;
-		_width = 50;
-		_height = 50;
+		_width = 30;
+		_height = 30;
 		_animation = new Animation();
+		_animation->setScale(D3DXVECTOR2(0.5f, 0.5f));
 
 		// tùy theo network ID mà màu của đại bàng sẽ khác nhau, tương ứng với các người chơi
 		switch (color)
@@ -35,6 +36,7 @@ public:
 			_animation->addFrameInfo(FrameInfo(SpriteList::Instance()->Eagle, 50, 100, 50, 100, D3DXVECTOR2(25.f, 25.f)));
 			break;
 		}
+
 	}
 
 	void Draw()

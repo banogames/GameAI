@@ -8,10 +8,27 @@
 #define X_STEP 32
 #define Y_STEP 32
 
-const int COUNT_X = X_MAX / X_STEP;
-const int COUNT_Y = Y_MAX / Y_STEP;
 
-const bool IS_DRAW_PATH_ASTAR = false; //test
+const int COUNT_NPC_FAST = 10;
+const int COUNT_NPC_TANK = 6;
+const int COUNT_NPC_SECURITY = 5;
+
+const int COUNT_X = 120; //X_MAX / X_STEP;
+const int COUNT_Y = 120; //Y_MAX / Y_STEP;
+
+const int SIZE_MAP_X = COUNT_X * X_STEP;
+const int SIZE_MAP_Y = COUNT_Y * Y_STEP;
+
+const int SIZE_PART = 12; //10 tọa độ 1 ô (chia nhỏ map)
+
+const int NUM_PART_X = COUNT_X / SIZE_PART;
+const int NUM_PART_Y = COUNT_X / SIZE_PART;
+
+const bool IS_DRAW_PATH_ASTAR = true; //test
+
+const int VALUE_ASTAR_PLAYER = 1;
+const int VALUE_ASTAR_NPC = 1;
+const int VALUE_ASTAR_BRICK = 1;
 
 // [0, 10] => 4 bit
 enum EntityType
@@ -27,6 +44,13 @@ enum EntityType
 	ET_UpgradeItem,
 	ET_NPC,
 	ET_Eagle
+};
+
+enum NPCType 
+{
+	NPC_FAST,
+	NPC_TANK,
+	NPC_SECURITY
 };
 
 enum BulletType 

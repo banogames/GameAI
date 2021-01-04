@@ -1,6 +1,14 @@
 ﻿#include "BattleScene.h"
 #include "AStar.h"
 #include "GameLog.h"
+#include "GameDefine.h"
+
+void BattleScene::InitCamera(GraphicsDevice* gDevice) 
+{
+	camera = new Camera(gDevice, X_MAX, Y_MAX, 0, DirectX::XMFLOAT3(1.0f, 1.0f, 1.0f));
+	camera->Follow(_player);
+	//camera->Follow(_npcList.at(0));
+}
 
 BattleScene::BattleScene()
 {
@@ -24,30 +32,75 @@ BattleScene::BattleScene()
 		float posX = (*it)->Position.x;
 		float posY = (*it)->Position.y;
 		//set Obstacle astar
-		Astar::getInstance()->SetValue((posX / X_STEP), (posY / Y_STEP), 1);
+		Astar::getInstance()->SetValue((posX / X_STEP), (posY / Y_STEP), VALUE_ASTAR_BRICK);
 	}
 
 	_player = new Player();
+	_bulletList.insert(_bulletList.begin(),_player->_bulletList.begin(), _player->_bulletList.end());
+
 	
 	//set gia tri astar cua palyer
-	Astar::getInstance()->SetValue(_player->Position.x / X_STEP, _player->Position.y / Y_STEP, 2);
+	Astar::getInstance()->SetValue(_player->Position.x / X_STEP, _player->Position.y / Y_STEP, VALUE_ASTAR_PLAYER);
 
-	// tạo 3 npcs
-	for (int i = 0; i < 5; i++)
+
+	// tạo npcs
+	for (int i = 0; i < COUNT_NPC_FAST; i++)
 	{
-		NPC* npc = new NPC();
-
 		Vec2 *pos = new Vec2();
+		NPCFast *npcFast = new NPCFast();
+		NPC* npc = static_cast<NPC *>(npcFast);
 		if (Astar::getInstance()->RandomPosValid(pos))
 		{
-			npc->SetPosition((pos->x + 0.5)* X_STEP , (pos->y + 0.5)* Y_STEP);
+			npc->SetPosition(((float)pos->x + 0.5)* X_STEP, ((float)pos->y + 0.5)* Y_STEP);
+			Astar::getInstance()->SetValue(pos->x, pos->y, VALUE_ASTAR_NPC);
 		}
 		_npcList.push_back(npc);
-
-		// tạo 1 BULLET cho mỗi NPC
-		/*Bullet* bullet = new Bullet();
-		_bulletList.push_back(bullet);*/
+		_bulletList.insert(_bulletList.begin(), npc->_bulletList.begin(), npc->_bulletList.end());
 	}
+
+	for (int i = 0; i < COUNT_NPC_TANK; i++)
+	{
+		Vec2 *pos = new Vec2();
+		NPCTank *npcTank = new NPCTank();
+		NPC* npc = static_cast<NPC *>(npcTank);
+		if (Astar::getInstance()->RandomPosValid(pos))
+		{
+			npc->SetPosition(((float)pos->x + 0.5)* X_STEP, ((float)pos->y + 0.5)* Y_STEP);
+			Astar::getInstance()->SetValue(pos->x, pos->y, VALUE_ASTAR_NPC);
+		}
+		_npcList.push_back(npc);
+		_bulletList.insert(_bulletList.begin(), npc->_bulletList.begin(), npc->_bulletList.end());
+	}
+
+	int curEagle = -1;
+	for (int i = 0; i < COUNT_NPC_SECURITY; i++)
+	{
+		Vec2 *pos = new Vec2();
+		
+
+		//lấy vị trí của eagle tiếp => cho nó bảo vệ eagle đó
+		vector<Eagle*> eagleList = _map->getEagleList();
+		curEagle++;
+		if (curEagle >= eagleList.size())
+			curEagle = 0;
+
+		Vec2 vecEagle;
+		vecEagle.x = eagleList.at(curEagle)->Position.x / X_STEP;
+		vecEagle.y = eagleList.at(curEagle)->Position.y / Y_STEP;
+
+		//chạy xung quanh aegle 4 ô
+		NPCSecurity* npcSec = new NPCSecurity(vecEagle, 4);
+
+		NPC* npc = static_cast<NPC *>(npcSec);
+		if (Astar::getInstance()->RandomoPosValidAround(vecEagle, pos, 6))
+		{
+			npc->SetPosition(((float)pos->x + 0.5)* X_STEP, ((float)pos->y + 0.5)* Y_STEP);
+			Astar::getInstance()->SetValue(pos->x, pos->y, VALUE_ASTAR_NPC);
+		}
+		_npcList.push_back(npc);
+		_bulletList.insert(_bulletList.begin(), npc->_bulletList.begin(), npc->_bulletList.end());
+	}
+
 
 
 	// tạo 5 big explosion
@@ -79,6 +132,11 @@ BattleScene::BattleScene()
 
 void BattleScene::Update(float dt)
 {
+	if (camera)
+	{
+		camera->Update();
+	}
+
 	for (auto npc : _npcList) // set vận tốc npcs dựa theo direction 
 	{
 		npc->ApplyVelocity();
@@ -88,6 +146,7 @@ void BattleScene::Update(float dt)
 	{
 		for (NPC *npc : _npcList) // players va chạm npcs
 		{
+			npc->Update(dt);
 			if (!npc->IsDeleted)
 			{
 				bool _onColl = false;			
@@ -106,17 +165,30 @@ void BattleScene::Update(float dt)
 						}
 					}
 				}
+
+				//check va chạm với brick
+				for (auto brick : _map->getBrickListAroundEntity(npc->Position.x / X_STEP, npc->Position.y / Y_STEP))
+				{
+					if (npc->CheckCollision(brick))
+					{
+						if (_onColl == false)
+							_onColl = true;
+					}
+				}
+
 				npc->SetIsCollision(_onColl);
 
 				_player->CheckCollision(npc);
 
 				npc->CheckPlayerInRange(_player->Position.x / X_STEP, _player->Position.y / Y_STEP);
+
 			}
 		}
 
-		for (auto npc : _npcList)
+		//check brick
+		for (auto brick : _map->getBrickListAroundEntity(_player->Position.x / X_STEP, _player->Position.y / Y_STEP))
 		{
-			npc->Update(dt);
+			_player->CheckCollision(brick);
 		}
 
 		_player->HandleKeyboard(keyboard, dt);
@@ -125,17 +197,15 @@ void BattleScene::Update(float dt)
 
 	}
 
-	// sau khi có tọa độ mới tại frame này thì check va chạm với gạch
-	for (auto brick : _map->getBrickList())
-	{
-		if (!brick->IsDeleted)
-		{
-			_player->CheckCollision(brick);
 
-			for (auto npc : _npcList) // npcs va chạm bricks
-			{
-				npc->CheckCollision(brick);
-			}
+	for (auto bullet : _bulletList)
+	{
+		bullet->Update(dt);
+
+		//check va chạm brick xung quang
+		for (auto brick : _map->getBrickListAroundEntity(bullet->Position.x / X_STEP, bullet->Position.y / Y_STEP))
+		{
+			bullet->CheckCollision(brick);
 		}
 	}
 
@@ -157,22 +227,32 @@ void BattleScene::Update(float dt)
 
 
 	//test astar
-	//if (keyboard[VK_SPACE]) 
-	//{
-	//	for (NPC *npc : _npcList) //move ai to player
-	//	{
-	//		npc->MovoToGridAstar(_player->Position.x / X_STEP, _player->Position.y /Y_STEP);
-	//	}
-	//}
+	if (keyboard[VK_END]) 
+	{
+		for (NPC *npc : _npcList) //move ai to player
+		{
+			npc->MoveGridAstar(_player->Position.x / X_STEP, _player->Position.y /Y_STEP);
+		}
+	}
 
 }
 
 void BattleScene::Draw()
 {
-	_waterBrick->Draw();
+	if (camera)
+	{
+		camera->Draw();
+		_map->DrawInCamera((camera->posX - camera->width/2)/X_STEP, (camera->posX + camera->width / 2)/X_STEP, 
+			(camera->posY - camera->height / 2)/Y_STEP, (camera->posY + camera->height / 2)/Y_STEP);
+	}
 
-	_map->Draw();
+	//chỉ vẽ các objec ở trong camera
 
+	//_waterBrick->Draw();
+
+	//_map->Draw();
+
+	// tránh đường đi nằm phía trên NPC
 	if (IS_DRAW_PATH_ASTAR) 
 	{
 		for (NPC *npc : _npcList)
@@ -187,6 +267,11 @@ void BattleScene::Draw()
 	}
 
 	_player->Draw();
+
+	for (auto bullet : _bulletList)
+	{
+		bullet->Draw();
+	}
 
 	for (auto e : _smallExList)
 	{

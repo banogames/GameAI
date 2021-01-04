@@ -6,14 +6,17 @@
 #include <dinput.h>
 #include "GameTime.h"
 #include <thread>
+#include "GraphicsDevice.h"
 
 class Game
 {
 public:
-	Game();
+	//Game();
+	Game(GraphicsDevice* gDevice);
 	~Game() {}
 
 private:
+
 	void InitLoop(); // vòng lặp game
 	void Render(); // vẽ hình
 	void Update(float dt); // cập nhật game

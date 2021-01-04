@@ -139,6 +139,7 @@
     <ClInclude Include="Astar.h" />
     <ClInclude Include="AStarScene.h" />
     <ClInclude Include="BattleScene.h" />
+    <ClInclude Include="Camera.h" />
     <ClInclude Include="Eagle.h" />
     <ClInclude Include="Boundary.h" />
     <ClInclude Include="Brick.h" />
@@ -155,6 +156,7 @@
     <ClInclude Include="GameMap.h" />
     <ClInclude Include="GameTime.h" />
     <ClInclude Include="Game.h" />
+    <ClInclude Include="GraphicsDevice.h" />
     <ClInclude Include="GridTile.h" />
     <ClInclude Include="Item.h" />
     <ClInclude Include="Label.h" />
@@ -184,6 +186,9 @@
     <ClInclude Include="MetalBrick.h" />
     <ClInclude Include="Node.h" />
     <ClInclude Include="NPC.h" />
+    <ClInclude Include="NPCFast.h" />
+    <ClInclude Include="NPCSecurity.h" />
+    <ClInclude Include="NPCTank.h" />
     <ClInclude Include="Player.h" />
     <ClInclude Include="Pointed.h" />
     <ClInclude Include="ProtectItem.h" />
@@ -203,6 +208,7 @@
     <ClCompile Include="Astar.cpp" />
     <ClCompile Include="AStarScene.cpp" />
     <ClCompile Include="BattleScene.cpp" />
+    <ClCompile Include="Camera.cpp" />
     <ClCompile Include="Entity.cpp" />
     <ClCompile Include="GameCollision.cpp" />
     <ClCompile Include="GameDebugDraw.cpp" />
@@ -235,6 +241,9 @@
     <ClCompile Include="MapReader\TmxTileset.cpp" />
     <ClCompile Include="MapReader\TmxUtil.cpp" />
     <ClCompile Include="NPC.cpp" />
+    <ClCompile Include="NPCFast.cpp" />
+    <ClCompile Include="NPCSecurity.cpp" />
+    <ClCompile Include="NPCTank.cpp" />
     <ClCompile Include="Player.cpp" />
     <ClCompile Include="QuadTree.cpp" />
     <ClCompile Include="SceneManager.cpp" />

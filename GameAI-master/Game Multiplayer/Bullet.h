@@ -9,6 +9,7 @@ class Bullet : public Entity
 {
 	const float _speed = 400.f;
 	Direction _direction;	// hướng bay
+	EntityType typePlayer;
 
 	Explosion _explosion = new Explosion(false);
 	
@@ -80,9 +81,38 @@ public:
 			{
 				//nếu viên đạn của NPC bắn nổ brick => cập nhật lại astar tới điểm lưu
 			case ET_NormalBrick:
-				entity->IsDeleted = true;
-				//destroy brick => cập nhật lại astar chỗ brick nổ
-				Astar::getInstance()->SetValue(entity->Position.x / X_STEP, entity->Position.y / Y_STEP, 0);
+				entity->_heart--;
+				if (entity->_heart <= 0)
+				{
+					entity->IsDeleted = true;
+					Astar::getInstance()->SetValue(entity->Position.x / X_STEP, entity->Position.y / Y_STEP, 0);
+				}
+				break;
+
+			case ET_NPC:
+				//nếu bắn trúng NPC
+				if (typePlayer == ET_Player) 
+				{
+					entity->_heart--;
+					if (entity->_heart <= 0)
+					{
+						entity->IsDeleted = true;
+						Astar::getInstance()->SetValue(entity->Position.x / X_STEP, entity->Position.y / Y_STEP, 0);
+					}
+				}
+				break;
+
+			case ET_Player:
+				//nếu bắn trúng Player
+				if (typePlayer == ET_NPC)
+				{
+					//entity->heart--;
+					if (entity->_heart <= 0)
+					{
+						entity->IsDeleted = true;
+						Astar::getInstance()->SetValue(entity->Position.x / X_STEP, entity->Position.y / Y_STEP, 0);
+					}
+				}
 				break;
 			default:
 				break;
@@ -95,11 +125,12 @@ public:
 		IsDeleted = true;
 	}
 
-	void Shoot(D3DXVECTOR2 pos, Direction _dir)
+	void Shoot(D3DXVECTOR2 pos, Direction _dir, EntityType _typePlayer)
 	{
 		Position = pos;
 		setDirection(_dir);
 		IsDeleted = false;
+		typePlayer = _typePlayer;
 		ApplyVelocity();
 	}
 

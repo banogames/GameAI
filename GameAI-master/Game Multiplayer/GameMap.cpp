@@ -28,7 +28,8 @@ void GameMap::LoadMap(char* filePath)
 		if (layer->GetName() == "Brick" || 
 			layer->GetName() == "Metal Brick" || 
 			layer->GetName() == "Water" || 
-			layer->GetName() == "Tile Layer 1") 
+			layer->GetName() == "Boundary" || 
+			layer->GetName() == "Eagle") 
 		{
 			for (int j = 0; j < _map->GetNumTilesets(); j++)
 			{
@@ -53,21 +54,32 @@ void GameMap::LoadMap(char* filePath)
 							{
 								brick = new BrickNormal(pos);
 								_brickNorList.push_back((BrickNormal*)brick);
+								_brickList.push_back(brick);
+								_bricks[pos.x / X_STEP][pos.y / Y_STEP] = brick;
 							}
 							else if (layer->GetName() == "Metal Brick")
 							{
 								brick = new MetalBrick(pos);
+								_brickList.push_back(brick);
+								_bricks[pos.x / X_STEP][pos.y / Y_STEP] = brick;
 							}
 							else if (layer->GetName() == "Water")
 							{
 								brick = new Water(pos);
+								_brickList.push_back(brick);
+								_bricks[pos.x / X_STEP][pos.y / Y_STEP] = brick;
 							}
-							else if (layer->GetName() == "Tile Layer 1")
+							else if (layer->GetName() == "Boundary")
 							{
 								brick = new Boundary(pos);
+								_brickList.push_back(brick);
+								_bricks[pos.x / X_STEP][pos.y / Y_STEP] = brick;
 							}
-
-							_brickList.push_back(brick);
+							else if (layer->GetName() =="Eagle")
+							{
+								Eagle *eagle = new Eagle(pos);
+								_eagleList.push_back(eagle);
+							}	
 						}
 					}
 				}
@@ -84,6 +96,11 @@ void GameMap::Draw()
 		_brickList[i]->Draw();
 	}
 
+	for (int i = 0; i < (int)_eagleList.size(); i++)
+	{
+		_eagleList[i]->Draw();
+	}
+
 	// vẽ các hình ảnh khác lên
 	for (int i = 0; i < _map->GetNumTileLayers(); i++)
 	{
@@ -93,7 +110,8 @@ void GameMap::Draw()
 		if (layer->GetName() == "Brick" || 
 			layer->GetName() == "Metal Brick" || 
 			layer->GetName() == "Water" || 
-			layer->GetName() == "Tile Layer 1")
+			layer->GetName() == "Boundary" ||
+			layer->GetName() == "Eagle")
 			continue;
 
 		if (!layer->IsVisible())
@@ -146,4 +164,63 @@ void GameMap::Draw()
 
 		}
 	}
+
+}
+
+void GameMap::DrawInCamera(int posXMin, int posXMax, int posYMin, int posYMax)
+{
+	// vẽ các brick
+	for (int x = posXMin; x <= posXMax; x++)
+	{
+		for (int y = posYMin; y <= posYMax; y++)
+		{
+			if (x < COUNT_X && y < COUNT_Y
+				&& x >=0 && y >=0)
+			{
+				if (_bricks[x][y])
+					_bricks[x][y]->Draw();
+			}
+		}	
+	}
+
+	//vẽ eagle
+	for (int i = 0; i < (int)_eagleList.size(); i++)
+	{
+		if (_eagleList[i]->Position.x / X_STEP >= posXMin &&
+			_eagleList[i]->Position.x / X_STEP <= posXMax &&
+			_eagleList[i]->Position.y / Y_STEP >= posYMin &&
+			_eagleList[i]->Position.y / Y_STEP <= posYMax)
+		{
+			_eagleList[i]->Draw();
+		}		
+	}
+}
+
+vector<Brick*> GameMap::getBrickListAroundEntity(int posX, int posY)
+{
+	vector<Brick*> resuit;
+
+	//quét từ posX - size => posX + size
+	// posY - size => posY + size
+
+	int size = 2;
+
+	int xMin = posX - size < 0 ? 0 : posX - size;
+	int xMax = posX + size > COUNT_X ? COUNT_X : posX + size;
+
+	int yMin = posY - size < 0 ? 0 : posY - size;
+	int yMax = posY + size > COUNT_Y ? COUNT_Y : posY + size;
+
+	for (int x = xMin; x < xMax; x++) 
+	{
+		for (int y = yMin; y < yMax; y++) 
+		{
+			if (_bricks[x][y]) 
+			{
+				if (!_bricks[x][y]->IsDeleted)
+					resuit.push_back(_bricks[x][y]);
+			}
+		}
+	}
+	return resuit;
 }

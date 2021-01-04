@@ -16,6 +16,7 @@ public:
 	D3DXVECTOR2 Position = D3DXVECTOR2(0.f, 0.f);
 	D3DXVECTOR2 Velocity = D3DXVECTOR2(0.f, 0.f);
 	bool IsDeleted = false;
+	int _heart = 3;
 
 public:
 	Entity() {}

@@ -10,7 +10,7 @@ protected:
 	Animation* _animation;
 
 public:
-	Brick() {}
+	Brick() { _heart = 2; }
 	~Brick()  { delete _animation; }
 
 	void Draw() {
@@ -24,8 +24,8 @@ protected:
 	void BaseInit(D3DXVECTOR2 position)
 	{
 		Position = position;
-		_width = 30;
-		_height = 30;
+		_width = 28;
+		_height = 28;
 		_animation = new Animation();
 	}
 };

@@ -31,6 +31,12 @@
     <Filter Include="Scenes\AStarScene">
       <UniqueIdentifier>{94fec991-ca83-4912-a874-6603f432f67f}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Framework\Camera">
+      <UniqueIdentifier>{0088070e-7298-484d-aedd-ebfe9b456dc9}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Framework\Game Objects\NPC">
+      <UniqueIdentifier>{480d854f-3e2f-4cba-8b3b-c87aef29b934}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="MapReader\tinyxml2.h">
@@ -113,9 +119,6 @@
     </ClInclude>
     <ClInclude Include="Water.h">
       <Filter>Framework\Game Objects\Bricks</Filter>
-    </ClInclude>
-    <ClInclude Include="NPC.h">
-      <Filter>Framework\Game Objects</Filter>
     </ClInclude>
     <ClInclude Include="Pointed.h">
       <Filter>Framework\Game Objects</Filter>
@@ -208,6 +211,24 @@
     <ClInclude Include="Node.h">
       <Filter>AStar</Filter>
     </ClInclude>
+    <ClInclude Include="Camera.h">
+      <Filter>Framework\Camera</Filter>
+    </ClInclude>
+    <ClInclude Include="GraphicsDevice.h">
+      <Filter>Framework\Camera</Filter>
+    </ClInclude>
+    <ClInclude Include="NPC.h">
+      <Filter>Framework\Game Objects\NPC</Filter>
+    </ClInclude>
+    <ClInclude Include="NPCSecurity.h">
+      <Filter>Framework\Game Objects\NPC</Filter>
+    </ClInclude>
+    <ClInclude Include="NPCFast.h">
+      <Filter>Framework\Game Objects\NPC</Filter>
+    </ClInclude>
+    <ClInclude Include="NPCTank.h">
+      <Filter>Framework\Game Objects\NPC</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="MapReader\Tmx.h.in">
@@ -275,9 +296,6 @@
     <ClCompile Include="MapReader\tinyxml2.cpp">
       <Filter>Framework\Map Reader</Filter>
     </ClCompile>
-    <ClCompile Include="NPC.cpp">
-      <Filter>Framework\Game Objects</Filter>
-    </ClCompile>
     <ClCompile Include="Player.cpp">
       <Filter>Framework\Game Objects</Filter>
     </ClCompile>
@@ -335,6 +353,21 @@
     </ClCompile>
     <ClCompile Include="Astar.cpp">
       <Filter>AStar</Filter>
+    </ClCompile>
+    <ClCompile Include="Camera.cpp">
+      <Filter>Framework\Camera</Filter>
+    </ClCompile>
+    <ClCompile Include="NPC.cpp">
+      <Filter>Framework\Game Objects\NPC</Filter>
+    </ClCompile>
+    <ClCompile Include="NPCSecurity.cpp">
+      <Filter>Framework\Game Objects\NPC</Filter>
+    </ClCompile>
+    <ClCompile Include="NPCFast.cpp">
+      <Filter>Framework\Game Objects\NPC</Filter>
+    </ClCompile>
+    <ClCompile Include="NPCTank.cpp">
+      <Filter>Framework\Game Objects\NPC</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

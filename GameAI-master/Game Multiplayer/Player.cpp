@@ -41,6 +41,10 @@ Player::Player()
 		_bulletList.push_back(bullet);
 	}
 
+	_heart = 10;
+
+	_heatLabel = Label(to_string(_heart), 20, 15, Position);
+	
 }
 
 void Player::Update(float _dt)
@@ -50,22 +54,15 @@ void Player::Update(float _dt)
 
 	if ((Position.x / X_STEP) != (Position.x + Velocity.x * _dt) / X_STEP) 
 	{
-		printLog("astar update pos player");
 		//cập nhật astar => xóa điểm cũ cập nhật điểm 
 		Astar::getInstance()->SetValue(Position.x / X_STEP, Position.y / Y_STEP, 0);
-		Astar::getInstance()->SetValue((Position.x + Velocity.x*_dt) / X_STEP, (Position.y + Velocity.y*_dt) / Y_STEP, 3);
+		Astar::getInstance()->SetValue((Position.x + Velocity.x*_dt) / X_STEP, (Position.y + Velocity.y*_dt) / Y_STEP, VALUE_ASTAR_PLAYER);
 	}
 
 	Position += Velocity * _dt;
 
 	if (_isShield)
 		_shieldAnimation->Update(_dt);
-
-
-	for (auto bullet : _bulletList)
-	{
-		bullet->Update(_dt);
-	}
 }
 
 void Player::HandleKeyboard(std::map<int, bool> keys, float _dt)
@@ -87,7 +84,7 @@ void Player::HandleKeyboard(std::map<int, bool> keys, float _dt)
 			printLog("Shoot bullet");
 			if (_currentBullet >= _bulletList.size())
 				_currentBullet = 0;
-			_bulletList.at(_currentBullet)->Shoot(Position, _directionBullet);
+			_bulletList.at(_currentBullet)->Shoot(Position, _directionBullet, ET_Player);
 			_currentBullet++;
 		}
 	}
@@ -170,7 +167,7 @@ void Player::Move(D3DXVECTOR2 destination)
 void Player::Stop(D3DXVECTOR2 preDestination, D3DXVECTOR2 currentDestination)
 {
 	_direction = D_Stand;
-	/*if (abs(currentDestination.x - Position.x) < 2)
+	if (abs(currentDestination.x - Position.x) < 2)
 	{
 		currentDestination.x = round(currentDestination.x);
 		Position.x = currentDestination.x;
@@ -190,7 +187,7 @@ void Player::Stop(D3DXVECTOR2 preDestination, D3DXVECTOR2 currentDestination)
 	{
 		preDestination.y = round(preDestination.y);
 		Position.y = preDestination.y;
-	}*/
+	}
 	_isMoving = false;
 	SetAnimation(_direction);
 	ApplyVelocity();
@@ -388,15 +385,11 @@ void Player::Draw()
 		_currentAnimation->Draw(Position);
 		if (_isShield)
 			_shieldAnimation->Draw(Position);
+
+		_heatLabel.setPosition(Position);
+		_heatLabel.Draw(to_string(_heart), D3DCOLOR_XRGB(0, 255, 0));
 	}
 
-	if (!_bulletList.empty()) 
-	{
-		for (auto bullet : _bulletList)
-		{
-			bullet->Draw();
-		}
-	}	
 }
 
 void Player::DrawArrow()

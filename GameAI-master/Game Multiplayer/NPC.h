@@ -5,6 +5,7 @@
 #include <vector>
 #include "GridTile.h"
 #include "Bullet.h"
+#include "Label.h"
 #include <algorithm> 
 
 enum NPCState
@@ -17,14 +18,15 @@ enum NPCState
 
 class NPC :public Entity
 {
-	const float _speed = 30.f; //130.f;
+protected:
+	float _speed = 100.f; //130.f;
 	Direction _direction; // hướng di chuyển
 	Direction _directionAttack = D_Stand; // lưu hướng tấn công
 	Direction _directionBullet = D_Stand; //lưu hướng bắn đạn
 	NPCState _stateRun = S_RunAstar; //lưu hướng bắn đạn
 
 	std::vector<Explosion*> _explosionList; // trỏ đến
-	std::vector<Bullet*> _bulletList;
+	
 
 	Animation* _leftAnimation;
 	Animation* _rightAnimation;
@@ -32,14 +34,17 @@ class NPC :public Entity
 	Animation* _downAnimation;
 	Animation *_currentAnimation; // animation hiện tại
 
+	Label _heatLabel;
+
 	void ApplyAnimation();
 	D3DXVECTOR2 getVelocityByDirection(Direction direction);
 
-	
-
 public:
+	std::vector<Bullet*> _bulletList;
+
 	NPC();
 	~NPC() {}
+	virtual void Init();
 	void Update(float dt) override;
 	void Draw() override;
 	bool CheckCollision(Entity* entity);
@@ -47,7 +52,7 @@ public:
 	void addExplosion(Explosion* e) { _explosionList.push_back(e); }
 	void SetPosition(float x, float y);
 
-private:
+protected:
 	//tọa độ trên astar
 	Vec2* vec = new Vec2();
 
@@ -70,6 +75,7 @@ private:
 	void RunAstar();
 	void PathAstar(int posX, int posY);
 	void RunDodging(); //di chuyển né
+	virtual void RunRandom();
 
 	//dự đoán va chạm
 	void PredictCollision();
@@ -78,7 +84,7 @@ private:
 	//SHOOT
 	bool _isAutoShoot;
 	float  _timeWaittingShoot;
-	const float _timeDelayShoot = 5; //delay 5s để bắn
+	float _timeDelayShoot = 4; //delay 4s để bắn
 	int _currentBullet;
 	int _rangeAttack =8;
 	bool _isPlayerInRange; //player trong tầm nhắm thì đuổi theo bắn player

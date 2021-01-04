@@ -1,5 +1,7 @@
 ﻿#pragma once
-#include"Astar.h";
+#include"Astar.h";      /* time */
+#include <stdio.h>      /* printf, scanf, puts, NULL */
+#include <stdlib.h>     /* srand, rand */
 
 // Define the static Singleton pointer
 Astar* Astar::inst_ = NULL;
@@ -15,15 +17,15 @@ Astar* Astar::getInstance() {
 
 
 bool Astar::isValid(int x, int y)
-{ //If our Node is an obstacle it is not valid
-	if (x < 0 || y < 0 || x >= (X_MAX / X_STEP) || y >= (Y_MAX / Y_STEP)) {
+{ //If is not valid
+	if (x < 0 || y < 0 || x >= COUNT_X || y >= COUNT_Y) {
 		return false;
 	}
 	return true;
 }
 
 
-bool Astar::isObstacle(int x, int y, std::array < std::array<int, (Y_MAX / Y_STEP)>, (X_MAX / X_STEP)> map)
+bool Astar::isObstacle(int x, int y, std::array < std::array<int, COUNT_Y>, COUNT_X> map)
 {	
 	if (isValid(x, y)) {
 		return map[x][y] != 0;
@@ -71,7 +73,7 @@ void Astar::SetValue(int x, int y, int value)
 	}
 }
 
-std::vector<Node> Astar::makePath(std::array<std::array<Node, (Y_MAX / Y_STEP)>, (X_MAX / X_STEP)> map, Node dest)
+std::vector<Node> Astar::makePath(std::array<std::array<Node, COUNT_Y>, COUNT_X> map, Node dest)
 {
 	try
 	{
@@ -126,12 +128,12 @@ AstarResuit Astar::findPath(Node begin, Node dest)
 		return resuit;
 	}
 
-	bool closedList[(X_MAX / X_STEP)][(Y_MAX / Y_STEP)];
+	bool closedList[COUNT_X][COUNT_Y];
 
 	//Initialize whole map
-	std::array<std::array < Node, (Y_MAX / Y_STEP)>, (X_MAX / X_STEP)> _mapNode;
-	for (int x = 0; x < (X_MAX / X_STEP); x++) {
-		for (int y = 0; y < (Y_MAX / Y_STEP); y++) {
+	std::array<std::array < Node, COUNT_Y>, COUNT_X> _mapNode;
+	for (int x = 0; x < COUNT_X; x++) {
+		for (int y = 0; y < COUNT_Y; y++) {
 			_mapNode[x][y].fCost = FLT_MAX;
 			_mapNode[x][y].gCost = FLT_MAX;
 			_mapNode[x][y].hCost = FLT_MAX;
@@ -154,132 +156,72 @@ AstarResuit Astar::findPath(Node begin, Node dest)
 	_mapNode[x][y].parentY = y;
 
 	//mở note đầu tiên
+	
 	resuit.openList.emplace_back(_mapNode[x][y]);
 	bool destinationFound = false;
 
-	while (!resuit.openList.empty() && resuit.openList.size() < (X_MAX / X_STEP)*(Y_MAX / Y_STEP)) {
+#pragma region  Open fibonacciheap
+	FibonacciHeap<Node> openList;
+
+	while (!openList.isEmpty() && openList.size() < COUNT_X * COUNT_Y)
+	{
 		Node node;
-		do {
-			//This do-while loop could be replaced with extracting the first
-			//element from a set, but you'd have to make the resuit.openList a set.
-			//To be completely honest, I don't remember the reason why I do
-			//it with a vector, but for now it's still an option, although
-			//not as good as a set performance wise.
-			float temp = FLT_MAX;
-			std::vector<Node>::iterator itNode = resuit.openList.begin();
-			for (std::vector<Node>::iterator it = resuit.openList.begin();
-				it != resuit.openList.end(); it = next(it)) {
-				Node n = *it;
-				//lấy node với fCost bé hơn
-				if (n.fCost < temp) {
-					temp = n.fCost;
-					itNode = it;
-				}
-			}
-			node = *itNode;
-			resuit.openList.erase(itNode);
-		} while (isValid(node.x, node.y) == false);
+		do
+		{
+			node = openList.removeMinimum();
+		} while (!openList.isEmpty() && !isValidAndNotObs(node.x, node.y));
+
 
 		x = node.x;
 		y = node.y;
 		closedList[x][y] = true;
-		resuit.closeList.push_back(node);
+		//mapGrid[x][y]->SetType(Closed);
 
-		if (abs(begin.x - dest.x) > abs(begin.y - dest.y)) 
+		for (int newX = -1; newX <= 1; newX++)
 		{
-#pragma region  for xung quanh x->y
-			for (int newX = -1; newX <= 1; newX++)
-			{
-				for (int newY = -1; newY <= 1; newY++)
-				{
-					double gNew, hNew, fNew;
-					if (isValid(x + newX, y + newY)) //kiểm tra hợp lệ
-					{
-						if (!isObstacle(x + newX, y + newY, map)) //kiểm tra tồn tại
-						{
-							if (isDestination(x + newX, y + newY, dest) && (newX == 0 || newY == 0)) //tới điểm cuối
-							{
-								//Destination found - make path
-								_mapNode[x + newX][y + newY].parentX = x;
-								_mapNode[x + newX][y + newY].parentY = y;
-								destinationFound = true;
-								resuit.path = makePath(_mapNode, dest);
-								return resuit;
-							}
-							else if (closedList[x + newX][y + newY] == false)
-							{
-								if (newX == 0 || newY == 0)
-									gNew = node.gCost + 2.5f;
-								else continue;
-								hNew = calculateH(x + newX, y + newY, dest);
-								fNew = gNew + hNew;
-								//Check if this path is better than the one already present
-								if (_mapNode[x + newX][y + newY].fCost == FLT_MAX ||
-									_mapNode[x + newX][y + newY].fCost > fNew)
-								{
-									//Update the details of this neighbour node
-									_mapNode[x + newX][y + newY].fCost = fNew;
-									_mapNode[x + newX][y + newY].gCost = gNew;
-									_mapNode[x + newX][y + newY].hCost = hNew;
-									_mapNode[x + newX][y + newY].parentX = x;
-									_mapNode[x + newX][y + newY].parentY = y;
-									resuit.openList.emplace_back(_mapNode[x + newX][y + newY]);
-								}
-							}
-						}
-					}
-				}
-			}
-#pragma endregion
-		}
-		else 
-		{
-#pragma region  for xung quanh y->x
 			for (int newY = -1; newY <= 1; newY++)
 			{
-				for (int newX = -1; newX <= 1; newX++)
+				double gNew, hNew, fNew;
+				if (isValid(x + newX, y + newY))
 				{
-					double gNew, hNew, fNew;
-					if (isValid(x + newX, y + newY)) //kiểm tra hợp lệ
+					if (isDestination(x + newX, y + newY, dest) && (newX == 0 || newY == 0))
 					{
-						if (!isObstacle(x + newX, y + newY, map)) //kiểm tra tồn tại
+						//Destination found - make path.
+						_mapNode[x + newX][y + newY].parentX = x;
+						_mapNode[x + newX][y + newY].parentY = y;
+						destinationFound = true;
+						resuit.path = makePath(_mapNode, dest);
+						return resuit;
+					}
+					else if (!closedList[x + newX][y + newY])
+					{
+						if (newX == 0 || newY == 0)
+							gNew = node.gCost + 1.5;
+						else
+							continue;
+						hNew = calculateH(x + newX, y + newY, dest);
+						fNew = gNew + hNew;
+
+						//Check if this path is better than the one already present.
+						if (_mapNode[x + newX][y + newY].fCost == FLT_MAX || _mapNode[x + newX][y + newY].fCost > fNew)
 						{
-							if (isDestination(x + newX, y + newY, dest) && (newX == 0 || newY == 0)) //tới điểm cuối
-							{
-								//Destination found - make path
-								_mapNode[x + newX][y + newY].parentX = x;
-								_mapNode[x + newX][y + newY].parentY = y;
-								destinationFound = true;
-								resuit.path = makePath(_mapNode, dest);
-								return resuit;
-							}
-							else if (closedList[x + newX][y + newY] == false)
-							{
-								if (newX == 0 || newY == 0)
-									gNew = node.gCost + 2.5f;
-								else continue;
-								hNew = calculateH(x + newX, y + newY, dest);
-								fNew = gNew + hNew;
-								//Check if this path is better than the one already present
-								if (_mapNode[x + newX][y + newY].fCost == FLT_MAX ||
-									_mapNode[x + newX][y + newY].fCost > fNew)
-								{
-									//Update the details of this neighbour node
-									_mapNode[x + newX][y + newY].fCost = fNew;
-									_mapNode[x + newX][y + newY].gCost = gNew;
-									_mapNode[x + newX][y + newY].hCost = hNew;
-									_mapNode[x + newX][y + newY].parentX = x;
-									_mapNode[x + newX][y + newY].parentY = y;
-									resuit.openList.emplace_back(_mapNode[x + newX][y + newY]);
-								}
-							}
+							_mapNode[x + newX][y + newY].fCost = fNew;
+							_mapNode[x + newX][y + newY].gCost = gNew;
+							_mapNode[x + newX][y + newY].hCost = hNew;
+							_mapNode[x + newX][y + newY].parentX = x;
+							_mapNode[x + newX][y + newY].parentY = y;
+							openList.insert(_mapNode[x + newX][y + newY]);
+							//mapGrid[x + newX][y + newY]->SetType(Opened);
 						}
 					}
 				}
 			}
-#pragma endregion
-		}	
+		}
+		//PrintMatrix(_mapNode);
 	}
+
+#pragma endregion
+
 	if (destinationFound == false) {
 		std::cout << "Destination not found" << std::endl;
 		return resuit;
@@ -290,37 +232,27 @@ AstarResuit Astar::findPath(Node begin, Node dest)
 
 bool Astar::RandomPosValid(Vec2 *pos)
 {
-	std::vector<Vec2> listPosValids;  //list tọa độ rỗng
-	for (int x = 0; x < COUNT_X; x++)
-	{
-		for (int y = 0; y < COUNT_Y; y++)
-		{
-			if (map[x][y] == 0)
-				listPosValids.push_back(*new Vec2(x, y));
-		}
-	}
-	if (!listPosValids.empty()) 
-	{
-		printLog("cout valids " + listPosValids.size());
-		int index = rand() % listPosValids.size(); // pick a random index
-		*pos = listPosValids[index]; // a random value taken from that list
-		return true;
-	}
-	else {
-		printLog("cout valids empty");
-	}
-	return false;
+	//random ô (x,y)
+	int partX = rand() % (NUM_PART_X);
+	int partY = rand() % (NUM_PART_Y);
+	//random vị trí trong ô
+
+	Vec2 posPart;
+	posPart.x = (partX + 0.5f)*SIZE_PART;
+	posPart.y = (partY + 0.5f)*SIZE_PART;
+
+	return RandomoPosValidAround(posPart, pos, SIZE_PART);
 }
 
-bool Astar::RandomoPosValidAround(Vec2 *pos0, Vec2 *pos, int radius)
+bool Astar::RandomoPosValidAround(Vec2 pos0, Vec2 *pos, int range)
 {
 	std::vector<Vec2> listPosValids;  //list tọa độ rỗng
 
 	int xMin, xMax, yMin, yMax;
-	xMin = pos0->x - radius;
-	xMax = pos0->x + radius;
-	yMin = pos0->y - radius;
-	yMax = pos0->y + radius;
+	xMin = pos0.x - range;
+	xMax = pos0.x + range;
+	yMin = pos0.y - range;
+	yMax = pos0.y + range;
 	xMin = xMin < 0 ? 0 : xMin;
 	xMax = xMax > COUNT_X ? COUNT_X : xMax;
 	yMin = yMin < 0 ? 0 : yMin;
@@ -352,27 +284,44 @@ std::vector<Vec2*> Astar::GetListVecInAxisValid(int x, int y, int xRound, int yR
 	std::vector<Vec2*> validList;
 
 	//xét bề ngang
-	int _dtX = xRound < x ? 1 : -1;
-	while (xRound!=x)
+	//quét từ player ra 2 bên, cho phép bắn qua 1 viên gạch
+	int countBrick = 0;
+
+	int _dtX = xRound > x ? 1 : -1;
+	while (xRound!=x && countBrick <=1)
 	{
-		if (isValidAndNotObs(xRound, y))
+		if (isValid(x, y))
 		{
-			Vec2* vec = new Vec2(xRound, y);
-			validList.emplace_back(vec);
+			if (!isObstacle(x, y, map)) {
+				Vec2* vec = new Vec2(x, y);
+				validList.push_back(vec);
+			}
+			else
+			{
+				countBrick++;
+			}
 		}
-		xRound += _dtX;
+		
+		x += _dtX;
 	}
 
+	countBrick = 0;
 	//xét bề dọc
-	int _dtY = yRound < y ? 1 : -1;
-	while (yRound!=y)
+	int _dtY = yRound > y ? 1 : -1;
+	while (yRound!=y && countBrick <= 1)
 	{
-		if (isValidAndNotObs(x, yRound))
+		if (isValid(x, y))
 		{
-			Vec2* vec = new Vec2(x, yRound);
-			validList.emplace_back(vec);
+			if (!isObstacle(x, y, map)) {
+				Vec2* vec = new Vec2(x, y);
+				validList.push_back(vec);
+			}
+			else
+			{
+				countBrick++;
+			}
 		}
-		yRound += _dtY;
+		y += _dtY;
 	}
 	return validList;
 }
@@ -406,4 +355,415 @@ Vec2* Astar::RandomVecInAxisValid(Vec2 vecMine, Vec2 vecOther, int range)
 	return vecResult;
 }
 
+PartResuit Astar::getPartNext(Vec2 partPlayer, Vec2 partDest)
+{
+	PartResuit resuit;
+
+	//lấy part player làm gốc tọa độ
+	int deltaX = partDest.x - partPlayer.x;
+	int deltaY = partDest.y - partPlayer.y;
+
+	//chọn trong những ô có thể đi ra ô kế tiếp
+	//(dựa theo gốc chọn ô kế tiếp)
+	//lấy node kế tiếp
+	//đi tới node kế tiếp
+
+	float absTan = deltaX==0? deltaY : abs(deltaY / deltaX);
+
+	if (deltaX > 0)
+	{
+		if (deltaY > 0)
+		{
+			resuit.partDir = Part_Dir_Left_Top;
+			//3 ô 
+			//[x+1, y] [x+1,y+1] [x, y+1]
+			if (absTan <= 0.33f)
+			{
+				//[x+1, y]
+				resuit.vec.x = partPlayer.x + 1;
+				resuit.vec.y = partPlayer.y;
+			}
+			else if (absTan <= 3)
+			{
+				//[x+1,y+1]
+				resuit.vec.x = partPlayer.x + 1;
+				resuit.vec.y = partPlayer.y + 1;
+			}
+			else
+			{
+				//[x, y+1]
+				resuit.vec.x = partPlayer.x;
+				resuit.vec.y = partPlayer.y + 1;
+			}
+		}
+		else
+		{
+			resuit.partDir = Part_Dir_Left_Bottom;
+			//3 ô 
+			//[x+1, y] [x+1,y-1] [x, y-1]
+			if (absTan <= 0.33f)
+			{
+				//[x+1, y]
+				resuit.vec.x = partPlayer.x + 1;
+				resuit.vec.y = partPlayer.y;
+			}
+			else if (absTan <= 3)
+			{
+				//[x+1,y-1]
+				resuit.vec.x = partPlayer.x + 1;
+				resuit.vec.y = partPlayer.y - 1;
+			}
+			else
+			{
+				//[x, y-1]
+				resuit.vec.x = partPlayer.x;
+				resuit.vec.y = partPlayer.y - 1;
+			}
+		}
+	}
+	else
+	{
+		if (deltaY > 0)
+		{
+			resuit.partDir = Part_Dir_Right_Top;
+			//3 ô
+			//[x-1, y] [x-1,y+1] [x, y+1]
+			if (absTan <= 0.33f)
+			{
+				//[x-1, y]
+				resuit.vec.x = partPlayer.x - 1;
+				resuit.vec.y = partPlayer.y;
+			}
+			else if (absTan <= 3)
+			{
+				//[x-1,y+1]
+				resuit.vec.x = partPlayer.x - 1;
+				resuit.vec.y = partPlayer.y + 1;
+			}
+			else
+			{
+				//[x, y+1]
+				resuit.vec.x = partPlayer.x;
+				resuit.vec.y = partPlayer.y + 1;
+			}
+		}
+		else
+		{
+			resuit.partDir = Part_Dir_Right_Bottom;
+			//3 ô
+			//[x-1, y] [x-1,y-1] [x, y -1]
+			if (absTan < 0.33f)
+			{
+				//[x-1, y]
+				resuit.vec.x = partPlayer.x - 1;
+				resuit.vec.y = partPlayer.y;
+			}
+			else if (absTan < 3)
+			{
+				//[x-1,y-1]
+				resuit.vec.x = partPlayer.x - 1;
+				resuit.vec.y = partPlayer.y - 1;
+			}
+			else
+			{
+				//[x, y-1]
+				resuit.vec.x = partPlayer.x;
+				resuit.vec.y = partPlayer.y -1;
+			}
+		}
+	}
+
+	return resuit;
+}
+
+std::vector<Node> Astar::insertPath(vector<Node> path1, vector<Node> path2) 
+{
+	path1.insert(path1.end(), path2.begin(), path2.end());
+	return path1;
+}
+
+std::vector<Node> Astar::findPathNodeV2(Node player, Node dest, int size_part)
+{	
+	//nếu khoảng cách bé hơn 1 ô
+	if (abs(player.x - dest.x) <= size_part && abs(player.y - dest.y) <= size_part) 
+	{
+		Vec2 partPlayer, partDest;
+		partPlayer.x = player.x / size_part;
+		partPlayer.y = player.y / size_part;
+
+		partDest.x = dest.x / size_part;
+		partDest.y = dest.y / size_part;
+
+		return findPathV2WithPart(player, dest, partPlayer, partDest, size_part).path;
+	}
+
+	Vec2 partPlayer, partDest;
+	partPlayer.x = player.x / size_part;
+	partPlayer.y = player.y / size_part;
+
+	partDest.x = dest.x / size_part;
+	partDest.y = dest.y / size_part;
+
+	if (partPlayer.x == partDest.x && partPlayer.y == partDest.y) 
+	{
+		//cùng 1 ô
+		return findPathV2WithPart(player, dest, partPlayer, partDest, size_part).path;
+	}
+	else //nếu ở khác ô => kiếm ô cần đến
+	{
+		Node next;
+		PartResuit partNext = getPartNext(partPlayer, partDest);
+
+		//lấy ô valid trong part
+		//quét theo hướng
+
+		switch (partNext.partDir)
+		{
+		case Part_Dir_Left_Top:
+			printLog("Move left top");
+			for (int i = 0; i <= size_part; i++)
+			{
+				for (int x = partNext.vec.x * size_part; x <= partNext.vec.x * size_part + i; x++)
+				{
+					for (int y = partNext.vec.y * size_part + i; y >= partNext.vec.y * size_part; y--)
+					{
+						if (isValidAndNotObs(x, y))
+						{
+							next.x = x;
+							next.y = y;
+							return findPathV2WithPart(player, next, partPlayer, partNext.vec, size_part).path;
+						}
+					}
+				}
+			}
+
+		case Part_Dir_Left_Bottom:
+			printLog("Move left bottom");
+			for (int i = 0; i <= size_part; i++)
+			{
+				for (int x = partNext.vec.x * size_part + i; x >= partNext.vec.x * size_part; x--)
+				{
+					for (int y = partNext.vec.y * size_part; y <= partNext.vec.y * size_part + i; y++)
+					{
+						if (isValidAndNotObs(x, y))
+						{
+							next.x = x;
+							next.y = y;
+							return findPathV2WithPart(player, next, partPlayer, partNext.vec, size_part).path;
+						}
+					}
+				}
+			}
+
+		case Part_Dir_Right_Top:
+			printLog("Move right top");
+			for (int i = 0; i <= size_part; i++)
+			{
+				for (int x = partNext.vec.x * size_part - i; x <= partNext.vec.x * size_part; x++)
+				{
+					for (int y = partNext.vec.y * size_part; y <= partNext.vec.y * size_part + i; y++)
+					{
+						if (isValidAndNotObs(x, y))
+						{
+							next.x = x;
+							next.y = y;
+							return findPathV2WithPart(player, next, partPlayer, partNext.vec, size_part).path;
+						}
+					}
+				}
+			}
+
+		case Part_Dir_Right_Bottom:
+			printLog("Move right bottom");
+			for (int i = 0; i <= size_part; i++)
+			{
+				for (int x = partNext.vec.x * size_part; x >= partNext.vec.x * size_part - i; x--)
+				{
+					for (int y = partNext.vec.y * size_part - i; y <= partNext.vec.y * size_part; y++)
+					{
+						if (isValidAndNotObs(x, y))
+						{
+							next.x = x;
+							next.y = y;
+							return findPathV2WithPart(player, next, partPlayer, partNext.vec, size_part).path;
+						}
+					}
+				}
+			}
+		default:
+			break;
+		}
+
+		return findPathNodeV2(player, dest, size_part + SIZE_PART);
+	}
+
+}
+
+AstarResuit Astar::findPathV2(Node player, Node dest) 
+{
+	AstarResuit resuit;
+	resuit.path = findPathNodeV2(player, dest, SIZE_PART);
+	return resuit;
+}
+
+
+
+AstarResuit Astar::findPathV2WithPart(Node begin, Node dest, Vec2 partPlayer, Vec2 partDest, int size_part)
+{
+	AstarResuit resuit;
+
+	if (!isValid(dest.x, dest.y)) {
+		std::cout << "Destination is not valid" << std::endl;
+		return resuit;
+	}
+
+	if (isObstacle(dest.x, dest.y, map))
+	{
+		std::cout << "Destination is an obstacle" << std::endl;
+		return resuit;
+	}
+
+	if (isDestination(begin.x, begin.y, dest)) {
+		std::cout << "You are the destination" << std::endl;
+		return resuit;
+	}
+
+	int xMin, xMax, yMin, yMax;
+
+	if (partPlayer.x < partDest.x) {
+		xMin = partPlayer.x * size_part;
+		xMax = (partDest.x + 1)*size_part;
+	}
+	else
+	{
+		xMin = partDest.x * size_part;
+		xMax = (partPlayer.x + 1)*size_part;
+	}
+
+	if (partPlayer.y < partDest.y) {
+		yMin = partPlayer.y * size_part;
+		yMax = (partDest.y + 1)*size_part;
+	}
+	else
+	{
+		yMin = partDest.y * size_part;
+		yMax = (partPlayer.y + 1)*size_part;
+	}
+
+	if (xMax > COUNT_X) xMax = COUNT_X;
+	if (yMax > COUNT_Y) yMax = COUNT_Y;
+
+	//Initialize whole map
+	std::array<std::array < Node, COUNT_Y>, COUNT_X> _mapNode;
+	bool closedList[COUNT_Y][COUNT_X];
+
+	while (size_part < COUNT_Y/2)
+	{
+		for (int x = xMin; x < xMax; x++) {
+			for (int y = yMin; y <  yMax; y++) {
+				_mapNode[x][y].fCost = FLT_MAX;
+				_mapNode[x][y].gCost = FLT_MAX;
+				_mapNode[x][y].hCost = FLT_MAX;
+				_mapNode[x][y].parentX = -1;
+				_mapNode[x][y].parentY = -1;
+				_mapNode[x][y].x = x;
+				_mapNode[x][y].y = y;
+
+				closedList[x][y] = false;
+			}
+		}
+
+		//Initialize our starting list
+		int x = begin.x;
+		int y = begin.y;
+		_mapNode[x][y].fCost = 0.0;
+		_mapNode[x][y].gCost = 0.0;
+		_mapNode[x][y].hCost = 0.0;
+		_mapNode[x][y].parentX = x;
+		_mapNode[x][y].parentY = y;
+
+		//mở note đầu tiên
+
+		resuit.openList.emplace_back(_mapNode[x][y]);
+
+		bool destinationFound = false;
+
+
+	#pragma region  Open fibonacciheap
+	FibonacciHeap<Node> openList;
+
+	openList.insert(_mapNode[x][y]);
+		
+	while (!openList.isEmpty() && openList.size() < COUNT_X * COUNT_Y)
+	{
+		Node node;
+		do
+		{
+			node = openList.removeMinimum();
+
+		} while (!openList.isEmpty() && !isValidAndNotObs(node.x, node.y));
+		
+		x = node.x;
+		y = node.y;
+		closedList[x][y] = true;
+		//mapGrid[x][y]->SetType(Closed);
+		
+		for (int newX = -1; newX <= 1; newX++)
+		{
+			for (int newY = -1; newY <= 1; newY++)
+			{
+				if (x + newX < xMin || x + newX > xMax
+					|| y + newY < yMin || y + newY > yMax) continue;			
+
+				double gNew, hNew, fNew;
+				if (isValid(x + newX, y + newY))
+				{
+					if (isDestination(x + newX, y + newY, dest) && (newX == 0 || newY == 0))
+					{
+						//Destination found - make path.
+						_mapNode[x + newX][y + newY].parentX = x;
+						_mapNode[x + newX][y + newY].parentY = y;
+						destinationFound = true;
+						resuit.path = makePath(_mapNode, dest);
+						return resuit;
+					}
+					else if (!closedList[x + newX][y + newY])
+					{
+						if (newX == 0 || newY == 0)
+							gNew = node.gCost + 4.5f;
+						else
+							continue;
+						hNew = calculateH(x + newX, y + newY, dest);
+						fNew = gNew + hNew;
+		
+						//Check if this path is better than the one already present.
+						if (_mapNode[x + newX][y + newY].fCost == FLT_MAX || _mapNode[x + newX][y + newY].fCost > fNew)
+						{
+							_mapNode[x + newX][y + newY].fCost = fNew;
+							_mapNode[x + newX][y + newY].gCost = gNew;
+							_mapNode[x + newX][y + newY].hCost = hNew;
+							_mapNode[x + newX][y + newY].parentX = x;
+							_mapNode[x + newX][y + newY].parentY = y;
+							openList.insert(_mapNode[x + newX][y + newY]);
+							//mapGrid[x + newX][y + newY]->SetType(Opened);
+						}
+					}
+				}
+			}
+		}
+		//PrintMatrix(_mapNode);
+	}
+		
+#pragma endregion
+
+		if (destinationFound == false) {
+			std::cout << "Destination not found" << std::endl;
+			return resuit;
+		}
+
+		size_part +=SIZE_PART;
+	}
+
+	return resuit;
+}
 

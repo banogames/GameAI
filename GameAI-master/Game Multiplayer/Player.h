@@ -6,6 +6,7 @@
 #include <vector>
 #include "GameLog.h"
 #include "GameDefine.h"
+#include "Label.h"
 using namespace std;
 
 class Player : public Entity
@@ -21,7 +22,6 @@ class Player : public Entity
 	const float _time_BetweenShoots = 0.7f;
 	float _count_Shoot = 0.0f;
 	int _currentBullet;
-	vector<Bullet*> _bulletList;
 
 	bool _isMoving = false;
 
@@ -45,10 +45,14 @@ class Player : public Entity
 	Animation* _shieldAnimation; // animation khiên 
 	Animation* _spawnAnimation; // animation hồi sinh
 
+	Label _heatLabel;
+
 	void SetAnimation(Direction _dir);
 	void InitAnimation();
 	void LogPosition() { GAMELOG("(%i, %i)", (int)Position.x, (int)Position.y); }	
 public:
+	vector<Bullet*> _bulletList;
+
 	Player();
 	~Player() {}
 	void Update(float dt);

@@ -27,6 +27,10 @@ public:
 	virtual void MakeCollision(Entity* _en) {}	// thực hiện va chạm
 
 	RECT getBound();
+	void DecreasedHeart(int _value =1){
+		_heart -= _value;
+		if (_heart <= 0) IsDeleted = true;
+	}
 
 	int getWidth() { return _width; }
 	int getHeight() { return _height; }

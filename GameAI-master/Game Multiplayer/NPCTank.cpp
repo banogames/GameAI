@@ -9,6 +9,8 @@ void NPCTank::Init()
 {
 	NPC::Init();
 
+	_type = ET_NPC;
+
 	//máu nhiều, tốc độ chậm, vùng bắn hẹp
 	_speed = 80.0f;
 	_heart = rand() % 3 + 8; //8=> 10

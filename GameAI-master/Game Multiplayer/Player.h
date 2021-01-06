@@ -15,7 +15,7 @@ class Player : public Entity
 	Direction _direction = D_Stand;
 	Direction _directionBullet = D_Stand; //lưu hướng bắn đạn
 	bool _isShield = false;
-	int _level = 1;
+	int _level = 3;
 	int _score = 0;
 	int _color_Position = 0;
 

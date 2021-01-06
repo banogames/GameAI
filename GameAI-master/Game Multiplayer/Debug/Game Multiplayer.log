@@ -1,69 +1,33 @@
 ﻿  BattleScene.cpp
 d:\hoc tap\github\gameai\gameai-master\game multiplayer\astar.h(11): warning C4067: unexpected tokens following preprocessor directive - expected a newline
-d:\hoc tap\github\gameai\gameai-master\game multiplayer\bullet.h(88): warning C4244: 'argument': conversion from 'FLOAT' to 'int', possible loss of data
+d:\hoc tap\github\gameai\gameai-master\game multiplayer\bullet.h(89): warning C4244: 'argument': conversion from 'FLOAT' to 'int', possible loss of data
 d:\hoc tap\github\gameai\gameai-master\game multiplayer\bullet.h(100): warning C4244: 'argument': conversion from 'FLOAT' to 'int', possible loss of data
-d:\hoc tap\github\gameai\gameai-master\game multiplayer\bullet.h(113): warning C4244: 'argument': conversion from 'FLOAT' to 'int', possible loss of data
+d:\hoc tap\github\gameai\gameai-master\game multiplayer\bullet.h(112): warning C4244: 'argument': conversion from 'FLOAT' to 'int', possible loss of data
+d:\hoc tap\github\gameai\gameai-master\game multiplayer\bullet.h(123): warning C4244: 'argument': conversion from 'FLOAT' to 'int', possible loss of data
+d:\hoc tap\github\gameai\gameai-master\game multiplayer\bullet.h(133): warning C4244: 'argument': conversion from 'FLOAT' to 'int', possible loss of data
 d:\hoc tap\github\gameai\gameai-master\game multiplayer\battlescene.cpp(35): warning C4244: 'argument': conversion from 'float' to 'int', possible loss of data
 d:\hoc tap\github\gameai\gameai-master\game multiplayer\battlescene.cpp(43): warning C4244: 'argument': conversion from 'FLOAT' to 'int', possible loss of data
-d:\hoc tap\github\gameai\gameai-master\game multiplayer\battlescene.cpp(54): warning C4244: 'argument': conversion from 'double' to 'float', possible loss of data
-d:\hoc tap\github\gameai\gameai-master\game multiplayer\battlescene.cpp(68): warning C4244: 'argument': conversion from 'double' to 'float', possible loss of data
-d:\hoc tap\github\gameai\gameai-master\game multiplayer\battlescene.cpp(84): warning C4018: '>=': signed/unsigned mismatch
-d:\hoc tap\github\gameai\gameai-master\game multiplayer\battlescene.cpp(88): warning C4244: '=': conversion from 'FLOAT' to 'int', possible loss of data
+d:\hoc tap\github\gameai\gameai-master\game multiplayer\battlescene.cpp(70): warning C4244: 'argument': conversion from 'double' to 'float', possible loss of data
+d:\hoc tap\github\gameai\gameai-master\game multiplayer\battlescene.cpp(85): warning C4018: '>=': signed/unsigned mismatch
 d:\hoc tap\github\gameai\gameai-master\game multiplayer\battlescene.cpp(89): warning C4244: '=': conversion from 'FLOAT' to 'int', possible loss of data
-d:\hoc tap\github\gameai\gameai-master\game multiplayer\battlescene.cpp(97): warning C4244: 'argument': conversion from 'double' to 'float', possible loss of data
-d:\hoc tap\github\gameai\gameai-master\game multiplayer\battlescene.cpp(170): warning C4244: 'argument': conversion from 'FLOAT' to 'int', possible loss of data
-d:\hoc tap\github\gameai\gameai-master\game multiplayer\battlescene.cpp(183): warning C4244: 'argument': conversion from 'FLOAT' to 'int', possible loss of data
-d:\hoc tap\github\gameai\gameai-master\game multiplayer\battlescene.cpp(189): warning C4244: 'argument': conversion from 'FLOAT' to 'int', possible loss of data
-d:\hoc tap\github\gameai\gameai-master\game multiplayer\battlescene.cpp(206): warning C4244: 'argument': conversion from 'FLOAT' to 'int', possible loss of data
-d:\hoc tap\github\gameai\gameai-master\game multiplayer\battlescene.cpp(234): warning C4244: 'argument': conversion from 'FLOAT' to 'int', possible loss of data
-  Game.cpp
-  c:\program files (x86)\microsoft directx sdk (june 2010)\include\dinput.h: DIRECTINPUT_VERSION undefined. Defaulting to version 0x0800
-d:\hoc tap\github\gameai\gameai-master\game multiplayer\astar.h(11): warning C4067: unexpected tokens following preprocessor directive - expected a newline
-d:\hoc tap\github\gameai\gameai-master\game multiplayer\bullet.h(88): warning C4244: 'argument': conversion from 'FLOAT' to 'int', possible loss of data
-d:\hoc tap\github\gameai\gameai-master\game multiplayer\bullet.h(100): warning C4244: 'argument': conversion from 'FLOAT' to 'int', possible loss of data
-d:\hoc tap\github\gameai\gameai-master\game multiplayer\bullet.h(113): warning C4244: 'argument': conversion from 'FLOAT' to 'int', possible loss of data
-  NPC.cpp
-d:\hoc tap\github\gameai\gameai-master\game multiplayer\astar.h(11): warning C4067: unexpected tokens following preprocessor directive - expected a newline
-d:\hoc tap\github\gameai\gameai-master\game multiplayer\bullet.h(88): warning C4244: 'argument': conversion from 'FLOAT' to 'int', possible loss of data
-d:\hoc tap\github\gameai\gameai-master\game multiplayer\bullet.h(100): warning C4244: 'argument': conversion from 'FLOAT' to 'int', possible loss of data
-d:\hoc tap\github\gameai\gameai-master\game multiplayer\bullet.h(113): warning C4244: 'argument': conversion from 'FLOAT' to 'int', possible loss of data
-d:\hoc tap\github\gameai\gameai-master\game multiplayer\npc.cpp(127): warning C4018: '<': signed/unsigned mismatch
-d:\hoc tap\github\gameai\gameai-master\game multiplayer\npc.cpp(264): warning C4244: '=': conversion from 'FLOAT' to 'int', possible loss of data
-d:\hoc tap\github\gameai\gameai-master\game multiplayer\npc.cpp(265): warning C4244: '=': conversion from 'FLOAT' to 'int', possible loss of data
-d:\hoc tap\github\gameai\gameai-master\game multiplayer\npc.cpp(277): warning C4018: '<': signed/unsigned mismatch
-d:\hoc tap\github\gameai\gameai-master\game multiplayer\npc.cpp(280): warning C4018: '<': signed/unsigned mismatch
-d:\hoc tap\github\gameai\gameai-master\game multiplayer\npc.cpp(329): warning C4018: '>=': signed/unsigned mismatch
-d:\hoc tap\github\gameai\gameai-master\game multiplayer\npc.cpp(356): warning C4018: '<': signed/unsigned mismatch
-d:\hoc tap\github\gameai\gameai-master\game multiplayer\npc.cpp(388): warning C4018: '<': signed/unsigned mismatch
-d:\hoc tap\github\gameai\gameai-master\game multiplayer\npc.cpp(390): warning C4018: '<': signed/unsigned mismatch
-d:\hoc tap\github\gameai\gameai-master\game multiplayer\npc.cpp(410): warning C4244: '=': conversion from 'FLOAT' to 'int', possible loss of data
-d:\hoc tap\github\gameai\gameai-master\game multiplayer\npc.cpp(411): warning C4244: '=': conversion from 'FLOAT' to 'int', possible loss of data
-d:\hoc tap\github\gameai\gameai-master\game multiplayer\npc.cpp(451): warning C4018: '>=': signed/unsigned mismatch
-d:\hoc tap\github\gameai\gameai-master\game multiplayer\npc.cpp(495): warning C4244: 'argument': conversion from 'FLOAT' to 'int', possible loss of data
-d:\hoc tap\github\gameai\gameai-master\game multiplayer\npc.cpp(496): warning C4244: 'argument': conversion from 'FLOAT' to 'int', possible loss of data
-d:\hoc tap\github\gameai\gameai-master\game multiplayer\npc.cpp(619): warning C4244: '=': conversion from 'FLOAT' to 'int', possible loss of data
-d:\hoc tap\github\gameai\gameai-master\game multiplayer\npc.cpp(620): warning C4244: '=': conversion from 'FLOAT' to 'int', possible loss of data
-d:\hoc tap\github\gameai\gameai-master\game multiplayer\npc.cpp(662): warning C4018: '>=': signed/unsigned mismatch
-d:\hoc tap\github\gameai\gameai-master\game multiplayer\npc.cpp(674): warning C4244: '=': conversion from 'FLOAT' to 'int', possible loss of data
-d:\hoc tap\github\gameai\gameai-master\game multiplayer\npc.cpp(675): warning C4244: '=': conversion from 'FLOAT' to 'int', possible loss of data
-d:\hoc tap\github\gameai\gameai-master\game multiplayer\npc.cpp(677): warning C4101: 'bottom': unreferenced local variable
-d:\hoc tap\github\gameai\gameai-master\game multiplayer\npc.cpp(677): warning C4101: 'left': unreferenced local variable
-d:\hoc tap\github\gameai\gameai-master\game multiplayer\npc.cpp(677): warning C4101: 'top': unreferenced local variable
-d:\hoc tap\github\gameai\gameai-master\game multiplayer\npc.cpp(677): warning C4101: 'right': unreferenced local variable
-  NPCFast.cpp
-d:\hoc tap\github\gameai\gameai-master\game multiplayer\astar.h(11): warning C4067: unexpected tokens following preprocessor directive - expected a newline
-d:\hoc tap\github\gameai\gameai-master\game multiplayer\bullet.h(88): warning C4244: 'argument': conversion from 'FLOAT' to 'int', possible loss of data
-d:\hoc tap\github\gameai\gameai-master\game multiplayer\bullet.h(100): warning C4244: 'argument': conversion from 'FLOAT' to 'int', possible loss of data
-d:\hoc tap\github\gameai\gameai-master\game multiplayer\bullet.h(113): warning C4244: 'argument': conversion from 'FLOAT' to 'int', possible loss of data
-  NPCSecurity.cpp
-d:\hoc tap\github\gameai\gameai-master\game multiplayer\astar.h(11): warning C4067: unexpected tokens following preprocessor directive - expected a newline
-d:\hoc tap\github\gameai\gameai-master\game multiplayer\bullet.h(88): warning C4244: 'argument': conversion from 'FLOAT' to 'int', possible loss of data
-d:\hoc tap\github\gameai\gameai-master\game multiplayer\bullet.h(100): warning C4244: 'argument': conversion from 'FLOAT' to 'int', possible loss of data
-d:\hoc tap\github\gameai\gameai-master\game multiplayer\bullet.h(113): warning C4244: 'argument': conversion from 'FLOAT' to 'int', possible loss of data
-  NPCTank.cpp
-d:\hoc tap\github\gameai\gameai-master\game multiplayer\astar.h(11): warning C4067: unexpected tokens following preprocessor directive - expected a newline
-d:\hoc tap\github\gameai\gameai-master\game multiplayer\bullet.h(88): warning C4244: 'argument': conversion from 'FLOAT' to 'int', possible loss of data
-d:\hoc tap\github\gameai\gameai-master\game multiplayer\bullet.h(100): warning C4244: 'argument': conversion from 'FLOAT' to 'int', possible loss of data
-d:\hoc tap\github\gameai\gameai-master\game multiplayer\bullet.h(113): warning C4244: 'argument': conversion from 'FLOAT' to 'int', possible loss of data
-  Generating Code...
+d:\hoc tap\github\gameai\gameai-master\game multiplayer\battlescene.cpp(90): warning C4244: '=': conversion from 'FLOAT' to 'int', possible loss of data
+d:\hoc tap\github\gameai\gameai-master\game multiplayer\battlescene.cpp(98): warning C4244: 'argument': conversion from 'double' to 'float', possible loss of data
+d:\hoc tap\github\gameai\gameai-master\game multiplayer\battlescene.cpp(114): warning C4244: 'argument': conversion from 'double' to 'float', possible loss of data
+d:\hoc tap\github\gameai\gameai-master\game multiplayer\battlescene.cpp(128): warning C4244: 'argument': conversion from 'double' to 'float', possible loss of data
+d:\hoc tap\github\gameai\gameai-master\game multiplayer\battlescene.cpp(143): warning C4018: '>=': signed/unsigned mismatch
+d:\hoc tap\github\gameai\gameai-master\game multiplayer\battlescene.cpp(147): warning C4244: '=': conversion from 'FLOAT' to 'int', possible loss of data
+d:\hoc tap\github\gameai\gameai-master\game multiplayer\battlescene.cpp(148): warning C4244: '=': conversion from 'FLOAT' to 'int', possible loss of data
+d:\hoc tap\github\gameai\gameai-master\game multiplayer\battlescene.cpp(156): warning C4244: 'argument': conversion from 'double' to 'float', possible loss of data
+d:\hoc tap\github\gameai\gameai-master\game multiplayer\battlescene.cpp(242): warning C4244: 'argument': conversion from 'FLOAT' to 'int', possible loss of data
+d:\hoc tap\github\gameai\gameai-master\game multiplayer\battlescene.cpp(268): warning C4244: 'argument': conversion from 'FLOAT' to 'int', possible loss of data
+d:\hoc tap\github\gameai\gameai-master\game multiplayer\battlescene.cpp(274): warning C4244: 'argument': conversion from 'FLOAT' to 'int', possible loss of data
+d:\hoc tap\github\gameai\gameai-master\game multiplayer\battlescene.cpp(289): warning C4244: 'argument': conversion from 'FLOAT' to 'int', possible loss of data
+d:\hoc tap\github\gameai\gameai-master\game multiplayer\battlescene.cpp(332): warning C4244: 'argument': conversion from 'FLOAT' to 'int', possible loss of data
+d:\hoc tap\github\gameai\gameai-master\game multiplayer\battlescene.cpp(364): warning C4244: 'argument': conversion from 'FLOAT' to 'int', possible loss of data
+d:\hoc tap\github\gameai\gameai-master\game multiplayer\battlescene.cpp(378): warning C4244: 'argument': conversion from 'FLOAT' to 'int', possible loss of data
+d:\hoc tap\github\gameai\gameai-master\game multiplayer\battlescene.cpp(391): warning C4244: 'argument': conversion from 'FLOAT' to 'int', possible loss of data
+d:\hoc tap\github\gameai\gameai-master\game multiplayer\battlescene.cpp(414): warning C4244: 'argument': conversion from 'FLOAT' to 'int', possible loss of data
+d:\hoc tap\github\gameai\gameai-master\game multiplayer\battlescene.cpp(442): warning C4244: 'argument': conversion from 'FLOAT' to 'int', possible loss of data
+d:\hoc tap\github\gameai\gameai-master\game multiplayer\battlescene.cpp(526): warning C4244: 'argument': conversion from 'int' to 'FLOAT', possible loss of data
+d:\hoc tap\github\gameai\gameai-master\game multiplayer\battlescene.cpp(530): warning C4244: 'argument': conversion from 'int' to 'FLOAT', possible loss of data
   Game Multiplayer.vcxproj -> D:\Hoc Tap\Github\GameAI\GameAI-master\Debug\Client.exe

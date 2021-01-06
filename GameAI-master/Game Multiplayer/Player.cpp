@@ -275,6 +275,7 @@ void Player::InitAnimation()
 	// animation với màu xe tăng của người chơi
 	if (_color_Position == 0)
 	{
+		//màu vàng
 		_leftAnimationLv01->addFrameInfo(FrameInfo(SpriteList::Instance()->Tank, 82, 82 + 32, 2, 2 + 32, D3DXVECTOR2(16.f, 16.f)));
 		_rightAnimationLv01->addFrameInfo(FrameInfo(SpriteList::Instance()->Tank, 233, 233 + 32, 2, 2 + 32, D3DXVECTOR2(16.f, 16.f)));
 		_upAnimationLv01->addFrameInfo(FrameInfo(SpriteList::Instance()->Tank, 2, 2 + 32, 4, 4 + 32, D3DXVECTOR2(16.f, 16.f)));
@@ -292,6 +293,7 @@ void Player::InitAnimation()
 	}
 	else if (_color_Position == 1)
 	{
+		//màu trắng
 		_leftAnimationLv01->addFrameInfo(FrameInfo(SpriteList::Instance()->Tank, 389, 389 + 32, 2, 2 + 32, D3DXVECTOR2(16.f, 16.f)));
 		_rightAnimationLv01->addFrameInfo(FrameInfo(SpriteList::Instance()->Tank, 540, 540 + 32, 2, 2 + 32, D3DXVECTOR2(16.f, 16.f)));
 		_upAnimationLv01->addFrameInfo(FrameInfo(SpriteList::Instance()->Tank, 310, 310 + 32, 4, 4 + 32, D3DXVECTOR2(16.f, 16.f)));
@@ -309,6 +311,7 @@ void Player::InitAnimation()
 	}
 	else if (_color_Position == 2)
 	{
+		//màu xanh
 		_leftAnimationLv01->addFrameInfo(FrameInfo(SpriteList::Instance()->Tank, 82, 82 + 32, 310, 310 + 32, D3DXVECTOR2(16.f, 16.f)));
 		_rightAnimationLv01->addFrameInfo(FrameInfo(SpriteList::Instance()->Tank, 233, 233 + 32, 310, 310 + 32, D3DXVECTOR2(16.f, 16.f)));
 		_upAnimationLv01->addFrameInfo(FrameInfo(SpriteList::Instance()->Tank, 2, 2 + 32, 312, 312 + 32, D3DXVECTOR2(16.f, 16.f)));
@@ -326,6 +329,7 @@ void Player::InitAnimation()
 	}
 	else if (_color_Position == 3)
 	{
+		//màu đỏ
 		_leftAnimationLv01->addFrameInfo(FrameInfo(SpriteList::Instance()->Tank, 389, 389 + 32, 310, 310 + 32, D3DXVECTOR2(16.f, 16.f)));
 		_rightAnimationLv01->addFrameInfo(FrameInfo(SpriteList::Instance()->Tank, 540, 540 + 32, 310, 310 + 32, D3DXVECTOR2(16.f, 16.f)));
 		_upAnimationLv01->addFrameInfo(FrameInfo(SpriteList::Instance()->Tank, 310, 310 + 32, 312, 312 + 32, D3DXVECTOR2(16.f, 16.f)));
@@ -403,6 +407,8 @@ void Player::DrawArrow()
 
 void Player::CheckCollision(Entity * entity)
 {
+	if (entity->IsDeleted) return;
+
 	//check collision bullet
 	for (auto bullet : _bulletList)
 	{

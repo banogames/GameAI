@@ -9,6 +9,8 @@ void NPCFast::Init()
 {
 	NPC::Init();
 
+	_type = ET_NPC;
+
 	//máu ít, tốc độ nhanh, vùng bắn rộng
 	_speed = 150.0f;
 	_heart = rand() % 3 + 4; //4=> 6

@@ -8,6 +8,9 @@
 #define X_STEP 32
 #define Y_STEP 32
 
+//count npc, player
+const int COUNT_PLAYER_SECURITY = 5;
+const int COUNT_PLAYER_OTHER = 6;
 
 const int COUNT_NPC_FAST = 10;
 const int COUNT_NPC_TANK = 6;
@@ -43,7 +46,8 @@ enum EntityType
 	ET_ProtectItem, 
 	ET_UpgradeItem,
 	ET_NPC,
-	ET_Eagle
+	ET_EaglePlayer,
+	ET_EagleNPC
 };
 
 enum NPCType 

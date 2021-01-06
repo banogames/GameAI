@@ -12,8 +12,6 @@ NPC::NPC()
 
 void NPC::Init() 
 {
-
-	_type = ET_NPC;
 	IsDeleted = false;
 	_width = 25;
 	_height = 25;
@@ -30,7 +28,7 @@ void NPC::Init()
 	_isMoving = true;
 
 	// tạo 6 bullet cho player
-	for (int i = 0; i < 6; i++)
+	for (int i = 0; i < 4; i++)
 	{
 		Bullet* bullet = new Bullet();
 		_bulletList.push_back(bullet);
@@ -86,6 +84,8 @@ void NPC::Draw()
 
 bool NPC::CheckCollision(Entity * e)
 {
+	if (e->IsDeleted) return false;
+
 	//check collision bullet
 	for (auto bullet : _bulletList)
 	{
@@ -661,13 +661,13 @@ void NPC::AutoShoot(float dt)
 		{
 			if (_currentBullet >= _bulletList.size())
 				_currentBullet = 0;
-			_bulletList.at(_currentBullet)->Shoot(Position, _directionBullet, ET_NPC);
+			_bulletList.at(_currentBullet)->Shoot(Position, _directionBullet, _type);
 			_currentBullet++;
 		}
 	}
 }
 
-void NPC::CheckPlayerInRange(int x, int y) 
+bool NPC::CheckPlayerInRange(int x, int y) 
 {
 	//kiểm tra player trong tầm bắn
 	int posX, posY;
@@ -686,7 +686,7 @@ void NPC::CheckPlayerInRange(int x, int y)
 	{
 		_isPlayerInRange = false;
 	}
-
+	return _isPlayerInRange;
 }
 
 #pragma endregion

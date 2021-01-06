@@ -15,6 +15,8 @@ void NPCSecurity::Init()
 {
 	NPC::Init();
 
+	_type = ET_NPC;
+
 	//chỉ di chuyển quanh 1 vùng được định sẵn
 	_speed = 100.0f;
 	_heart = rand() % 3 + 2; //2=> 4

@@ -98,7 +98,7 @@ public:
 	//ở ngoài set đường đi cho bot
 	void MoveGridAstar(int x, int y);
 
-	void CheckPlayerInRange(int x, int y);
+	bool CheckPlayerInRange(int x, int y);
 	//nếu player ở trong vùng quét => astar tới chỗ có thể bắn được player
 	//chỗ bắn được player tính bằng trục ngang, trục dọc theo gird player
 	//di chuyển tới trục ngang, trục dọc không có vật cản để bắn

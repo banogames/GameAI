@@ -3,6 +3,7 @@
 #include "Entity.h"
 #include "Explosion.h"
 #include "GameCollision.h"
+#include "Eagle.h"
 #include "Astar.h"
 
 class Bullet : public Entity
@@ -68,6 +69,7 @@ public:
 
 	void CheckCollision(Entity * entity)
 	{
+		if (entity->IsDeleted) return;
 		if (IsDeleted)
 			return;
 		CollisionResult cR = GameCollision::getCollisionResult(this, entity);
@@ -81,10 +83,9 @@ public:
 			{
 				//nếu viên đạn của NPC bắn nổ brick => cập nhật lại astar tới điểm lưu
 			case ET_NormalBrick:
-				entity->_heart--;
-				if (entity->_heart <= 0)
+				entity->DecreasedHeart();
+				if (entity->IsDeleted)
 				{
-					entity->IsDeleted = true;
 					Astar::getInstance()->SetValue(entity->Position.x / X_STEP, entity->Position.y / Y_STEP, 0);
 				}
 				break;
@@ -93,10 +94,9 @@ public:
 				//nếu bắn trúng NPC
 				if (typePlayer == ET_Player) 
 				{
-					entity->_heart--;
-					if (entity->_heart <= 0)
+					entity->DecreasedHeart();
+					if (entity->IsDeleted)
 					{
-						entity->IsDeleted = true;
 						Astar::getInstance()->SetValue(entity->Position.x / X_STEP, entity->Position.y / Y_STEP, 0);
 					}
 				}
@@ -106,10 +106,30 @@ public:
 				//nếu bắn trúng Player
 				if (typePlayer == ET_NPC)
 				{
-					//entity->heart--;
-					if (entity->_heart <= 0)
+					//entity->DecreasedHeart();
+					if (entity->IsDeleted)
 					{
-						entity->IsDeleted = true;
+						Astar::getInstance()->SetValue(entity->Position.x / X_STEP, entity->Position.y / Y_STEP, 0);
+					}
+				}
+				break;
+
+			case ET_EaglePlayer:
+				if (typePlayer == ET_NPC)
+				{
+					entity->DecreasedHeart();
+					if (entity->IsDeleted)
+					{
+						Astar::getInstance()->SetValue(entity->Position.x / X_STEP, entity->Position.y / Y_STEP, 0);
+					}
+				}
+				break;
+			case ET_EagleNPC:
+				if (typePlayer == ET_Player)
+				{
+					entity->DecreasedHeart();
+					if (entity->IsDeleted)
+					{
 						Astar::getInstance()->SetValue(entity->Position.x / X_STEP, entity->Position.y / Y_STEP, 0);
 					}
 				}

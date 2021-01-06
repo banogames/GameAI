@@ -29,12 +29,13 @@ void GameMap::LoadMap(char* filePath)
 			layer->GetName() == "Metal Brick" || 
 			layer->GetName() == "Water" || 
 			layer->GetName() == "Boundary" || 
-			layer->GetName() == "Eagle") 
+			layer->GetName() == "Eagle NPC" || 
+			layer->GetName() == "Eagle Player")
 		{
-			for (int j = 0; j < _map->GetNumTilesets(); j++)
+			/*for (int j = 0; j < _map->GetNumTilesets(); j++)
 			{
 				const Tmx::Tileset *tileSet = _map->GetTileset(j);
-
+*/
 				int tileWidth = _map->GetTileWidth();
 				int tileHeight = _map->GetTileHeight();
 
@@ -48,41 +49,44 @@ void GameMap::LoadMap(char* filePath)
 							D3DXVECTOR2 pos((float)(n * tileWidth + tileWidth / 2), 
 								(float)(m * tileHeight + tileHeight / 2));
 
-							// khởi tạo brick
-							Brick* brick;
 							if (layer->GetName() == "Brick")
 							{
-								brick = new BrickNormal(pos);
+								Brick* brick = new BrickNormal(pos);
 								_brickNorList.push_back((BrickNormal*)brick);
 								_brickList.push_back(brick);
 								_bricks[pos.x / X_STEP][pos.y / Y_STEP] = brick;
 							}
 							else if (layer->GetName() == "Metal Brick")
 							{
-								brick = new MetalBrick(pos);
+								Brick* brick = new MetalBrick(pos);
 								_brickList.push_back(brick);
 								_bricks[pos.x / X_STEP][pos.y / Y_STEP] = brick;
 							}
 							else if (layer->GetName() == "Water")
 							{
-								brick = new Water(pos);
+								Brick* brick = new Water(pos);
 								_brickList.push_back(brick);
 								_bricks[pos.x / X_STEP][pos.y / Y_STEP] = brick;
 							}
 							else if (layer->GetName() == "Boundary")
 							{
-								brick = new Boundary(pos);
+								Brick* brick = new Boundary(pos);
 								_brickList.push_back(brick);
 								_bricks[pos.x / X_STEP][pos.y / Y_STEP] = brick;
 							}
-							else if (layer->GetName() =="Eagle")
+							else if (layer->GetName() == "Eagle NPC")
 							{
-								Eagle *eagle = new Eagle(pos);
+								Eagle *eagle = new Eagle(pos, ET_EagleNPC);
 								_eagleList.push_back(eagle);
 							}	
+							else if (layer->GetName() == "Eagle Player")
+							{
+								Eagle *eagle = new Eagle(pos, ET_EaglePlayer);
+								_eagleList.push_back(eagle);
+							}
 						}
 					}
-				}
+				//}
 			}
 		}
 	}
@@ -183,8 +187,8 @@ void GameMap::DrawInCamera(int posXMin, int posXMax, int posYMin, int posYMax)
 		}	
 	}
 
-	//vẽ eagle
-	for (int i = 0; i < (int)_eagleList.size(); i++)
+	//vẽ eagle, ở game scene đã vẽ
+	/*for (int i = 0; i < (int)_eagleList.size(); i++)
 	{
 		if (_eagleList[i]->Position.x / X_STEP >= posXMin &&
 			_eagleList[i]->Position.x / X_STEP <= posXMax &&
@@ -193,7 +197,7 @@ void GameMap::DrawInCamera(int posXMin, int posXMax, int posYMin, int posYMax)
 		{
 			_eagleList[i]->Draw();
 		}		
-	}
+	}*/
 }
 
 vector<Brick*> GameMap::getBrickListAroundEntity(int posX, int posY)

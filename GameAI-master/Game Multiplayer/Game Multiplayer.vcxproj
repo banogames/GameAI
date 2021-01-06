@@ -190,6 +190,8 @@
     <ClInclude Include="NPCSecurity.h" />
     <ClInclude Include="NPCTank.h" />
     <ClInclude Include="Player.h" />
+    <ClInclude Include="PlayerOther.h" />
+    <ClInclude Include="PlayerSecurity.h" />
     <ClInclude Include="Pointed.h" />
     <ClInclude Include="ProtectItem.h" />
     <ClInclude Include="QuadTree.h" />
@@ -245,6 +247,8 @@
     <ClCompile Include="NPCSecurity.cpp" />
     <ClCompile Include="NPCTank.cpp" />
     <ClCompile Include="Player.cpp" />
+    <ClCompile Include="PlayerOther.cpp" />
+    <ClCompile Include="PlayerSecurity.cpp" />
     <ClCompile Include="QuadTree.cpp" />
     <ClCompile Include="SceneManager.cpp" />
     <ClCompile Include="Sprite.cpp" />

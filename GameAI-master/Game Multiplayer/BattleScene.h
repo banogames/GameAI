@@ -12,6 +12,8 @@
 #include "NPCSecurity.h"
 #include "NPCFast.h"
 #include "NPCTank.h"
+#include "PlayerOther.h"
+#include "PlayerSecurity.h"
 #include "Explosion.h"
 #include "ProtectItem.h"
 #include "UpgradeItem.h"
@@ -29,15 +31,23 @@ class BattleScene : public Scene
 	Player* _player;
 
 	vector<NPC*> _npcList;
+	vector<NPC*> _playerList;
+
 	vector<Bullet*> _bulletList;
 	vector<Explosion*> _smallExList;
 	vector<Explosion*> _bigExplosionList;
+
+	vector<Eagle*> eagleList;
+	vector<Eagle*> eagleNPCList;
+	vector<Eagle*> eaglePlayerList;
+
 	ProtectItem* _protectItem;
 	UpgradeItem* _upgradeItem;
 	Pointed* _pointed;
 
-	/*Label _labelPlayer;
-	Label _labelCountTime;*/
+	Label _labelPlayer;
+	Label _labelNPC;
+	//Label _labelCountTime;
 
 	Water* _waterBrick;
 

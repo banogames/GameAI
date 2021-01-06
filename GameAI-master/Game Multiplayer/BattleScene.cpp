@@ -42,6 +42,66 @@ BattleScene::BattleScene()
 	//set gia tri astar cua palyer
 	Astar::getInstance()->SetValue(_player->Position.x / X_STEP, _player->Position.y / Y_STEP, VALUE_ASTAR_PLAYER);
 
+	//inint eagle
+	eagleList = _map->getEagleList();
+	for (auto eagle : eagleList)
+	{
+		switch (eagle->getType())
+		{
+		case ET_EagleNPC:
+			eagleNPCList.push_back(eagle);
+			break;
+		case ET_EaglePlayer:
+			eaglePlayerList.push_back(eagle);
+			break;
+		default:
+			break;
+		}
+	}
+
+	//tạo other player
+	for (int i = 0; i < COUNT_PLAYER_OTHER; i++) 
+	{
+		Vec2 *pos = new Vec2();
+		PlayerOther *playerOther = new PlayerOther();
+		NPC* other = static_cast<NPC *>(playerOther);
+		if (Astar::getInstance()->RandomPosValid(pos))
+		{
+			other->SetPosition(((float)pos->x + 0.5)* X_STEP, ((float)pos->y + 0.5)* Y_STEP);
+			Astar::getInstance()->SetValue(pos->x, pos->y, VALUE_ASTAR_NPC);
+		}
+		_playerList.push_back(other);
+		_bulletList.insert(_bulletList.begin(), other->_bulletList.begin(), other->_bulletList.end());
+	}
+	
+	//tạo player security
+	int curEagle = -1;
+	if (eaglePlayerList.size() > 0)
+	{
+		for (int i = 0; i < COUNT_PLAYER_SECURITY; i++)
+		{
+			Vec2 *pos = new Vec2();
+			curEagle++;
+			if (curEagle >= eaglePlayerList.size())
+				curEagle = 0;
+
+			Vec2 vecEagle;
+			vecEagle.x = eaglePlayerList.at(curEagle)->Position.x / X_STEP;
+			vecEagle.y = eaglePlayerList.at(curEagle)->Position.y / Y_STEP;
+
+			//chạy xung quanh aegle 4 ô
+			PlayerSecurity* otherSec = new PlayerSecurity(vecEagle, 4);
+
+			NPC* other = static_cast<NPC *>(otherSec);
+			if (Astar::getInstance()->RandomoPosValidAround(vecEagle, pos, 6))
+			{
+				other->SetPosition(((float)pos->x + 0.5)* X_STEP, ((float)pos->y + 0.5)* Y_STEP);
+				Astar::getInstance()->SetValue(pos->x, pos->y, VALUE_ASTAR_NPC);
+			}
+			_playerList.push_back(other);
+			_bulletList.insert(_bulletList.begin(), other->_bulletList.begin(), other->_bulletList.end());
+		}
+	}
 
 	// tạo npcs
 	for (int i = 0; i < COUNT_NPC_FAST; i++)
@@ -71,36 +131,35 @@ BattleScene::BattleScene()
 		_npcList.push_back(npc);
 		_bulletList.insert(_bulletList.begin(), npc->_bulletList.begin(), npc->_bulletList.end());
 	}
-
-	int curEagle = -1;
-	for (int i = 0; i < COUNT_NPC_SECURITY; i++)
+	
+	//spawn NPC security
+	curEagle = -1;
+	if (eagleNPCList.size() > 0) 
 	{
-		Vec2 *pos = new Vec2();
-		
-
-		//lấy vị trí của eagle tiếp => cho nó bảo vệ eagle đó
-		vector<Eagle*> eagleList = _map->getEagleList();
-		curEagle++;
-		if (curEagle >= eagleList.size())
-			curEagle = 0;
-
-		Vec2 vecEagle;
-		vecEagle.x = eagleList.at(curEagle)->Position.x / X_STEP;
-		vecEagle.y = eagleList.at(curEagle)->Position.y / Y_STEP;
-
-		//chạy xung quanh aegle 4 ô
-		NPCSecurity* npcSec = new NPCSecurity(vecEagle, 4);
-
-		NPC* npc = static_cast<NPC *>(npcSec);
-		if (Astar::getInstance()->RandomoPosValidAround(vecEagle, pos, 6))
+		for (int i = 0; i < COUNT_NPC_SECURITY; i++)
 		{
-			npc->SetPosition(((float)pos->x + 0.5)* X_STEP, ((float)pos->y + 0.5)* Y_STEP);
-			Astar::getInstance()->SetValue(pos->x, pos->y, VALUE_ASTAR_NPC);
-		}
-		_npcList.push_back(npc);
-		_bulletList.insert(_bulletList.begin(), npc->_bulletList.begin(), npc->_bulletList.end());
-	}
+			Vec2 *pos = new Vec2();
+			curEagle++;
+			if (curEagle >= eagleNPCList.size())
+				curEagle = 0;
 
+			Vec2 vecEagle;
+			vecEagle.x = eagleNPCList.at(curEagle)->Position.x / X_STEP;
+			vecEagle.y = eagleNPCList.at(curEagle)->Position.y / Y_STEP;
+
+			//chạy xung quanh aegle 4 ô
+			NPCSecurity* npcSec = new NPCSecurity(vecEagle, 4);
+
+			NPC* npc = static_cast<NPC *>(npcSec);
+			if (Astar::getInstance()->RandomoPosValidAround(vecEagle, pos, 6))
+			{
+				npc->SetPosition(((float)pos->x + 0.5)* X_STEP, ((float)pos->y + 0.5)* Y_STEP);
+				Astar::getInstance()->SetValue(pos->x, pos->y, VALUE_ASTAR_NPC);
+			}
+			_npcList.push_back(npc);
+			_bulletList.insert(_bulletList.begin(), npc->_bulletList.begin(), npc->_bulletList.end());
+		}
+	}
 
 
 	// tạo 5 big explosion
@@ -114,6 +173,11 @@ BattleScene::BattleScene()
 			npc->addExplosion(e);
 		}
 
+		for (auto other : _playerList)
+		{
+			other->addExplosion(e);
+		}
+
 		_player->addExplosion(e);
 	}
 
@@ -124,9 +188,8 @@ BattleScene::BattleScene()
 	_upgradeItem->IsDeleted = true;
 	_pointed = new Pointed();
 
-	//_labelPlayer = Label("", 26, 13, D3DXVECTOR2(0, 0));
-
-	
+	_labelPlayer = Label("", 40, 20, D3DXVECTOR2(0, 0));
+	_labelNPC = Label("", 40, 20, D3DXVECTOR2(0, 0));
 }
 
 
@@ -137,10 +200,10 @@ void BattleScene::Update(float dt)
 		camera->Update();
 	}
 
-	for (auto npc : _npcList) // set vận tốc npcs dựa theo direction 
-	{
-		npc->ApplyVelocity();
-	}
+	//for (auto npc : _npcList) // set vận tốc npcs dựa theo direction 
+	//{
+	//	npc->ApplyVelocity();
+	//}
 
 	if (!_player->IsDeleted)
 	{
@@ -157,12 +220,21 @@ void BattleScene::Update(float dt)
 				}
 				for (auto npcOther : _npcList)
 				{
-					if (npc != npcOther) {
+					if (npc != npcOther) 
+					{
 						if (npc->CheckCollision(npcOther)) 
 						{
 							if (_onColl == false)
 								_onColl = true;
 						}
+					}
+				}
+				for (auto playerOther : _playerList)
+				{
+					if (npc->CheckCollision(playerOther))
+					{
+						if (_onColl == false)
+							_onColl = true;
 					}
 				}
 
@@ -176,19 +248,155 @@ void BattleScene::Update(float dt)
 					}
 				}
 
+				//check eagle
+				for (auto eagle : eagleList)
+				{
+					if (npc->CheckCollision(eagle)) 
+					{
+						if (_onColl == false)
+							_onColl = true;
+					}
+				}
+
 				npc->SetIsCollision(_onColl);
 
 				_player->CheckCollision(npc);
 
-				npc->CheckPlayerInRange(_player->Position.x / X_STEP, _player->Position.y / Y_STEP);
 
+				//quét theo thứ tự: player => player other => player eagle
+				bool inRange = false;
+				inRange = npc->CheckPlayerInRange(_player->Position.x / X_STEP, _player->Position.y / Y_STEP);
+
+				if (!inRange) {
+					for (NPC *other : _playerList)
+					{
+						if (!other->IsDeleted) {
+							if (npc->CheckPlayerInRange(other->Position.x / X_STEP, other->Position.y / Y_STEP))
+							{
+								inRange = true;
+								break;
+							}
+						}	
+					}
+				}
+				
+				if (!inRange) 
+				{
+					for (Eagle* eagle : eaglePlayerList)
+					{
+						if (!eagle->IsDeleted) 
+						{
+							if (npc->CheckPlayerInRange(eagle->Position.x / X_STEP, eagle->Position.y / Y_STEP))
+							{
+								inRange = true;
+								break;
+							}
+						}	
+					}
+				}	
 			}
 		}
+
+		//other player
+		for (NPC *other : _playerList) // players va chạm npcs
+		{
+			other->Update(dt);
+			if (!other->IsDeleted)
+			{
+				bool _onColl = false;
+				if (other->CheckCollision(_player))
+				{
+					if (_onColl == false)
+						_onColl = true;
+				}
+				for (auto playerOther : _playerList)
+				{
+					if (other != playerOther) {
+						if (other->CheckCollision(playerOther))
+						{
+							if (_onColl == false)
+								_onColl = true;
+						}
+					}
+				}
+				for (auto npc : _npcList)
+				{
+					if (other->CheckCollision(npc))
+					{
+						if (_onColl == false)
+							_onColl = true;
+					}
+				}
+
+				//check va chạm với brick
+				for (auto brick : _map->getBrickListAroundEntity(other->Position.x / X_STEP, other->Position.y / Y_STEP))
+				{
+					if (other->CheckCollision(brick))
+					{
+						if (_onColl == false)
+							_onColl = true;
+					}
+				}
+
+				//check eagle
+				for (auto eagle : eagleList)
+				{
+					if (other->CheckCollision(eagle))
+					{
+						if (_onColl == false)
+							_onColl = true;
+					}
+				}
+
+				other->SetIsCollision(_onColl);
+
+				_player->CheckCollision(other);
+
+
+				//quét theo thứ tự: npc => npc eagle
+				bool inRange = false;
+				if (!inRange) 
+				{
+					for (NPC *npc : _npcList)
+					{
+						if (!npc->IsDeleted) 
+						{
+							if (other->CheckPlayerInRange(npc->Position.x / X_STEP, npc->Position.y / Y_STEP))
+							{
+								inRange = true;
+								break;
+							}
+						}
+					}
+				}
+				if (!inRange)
+				{
+					for (Eagle* eagle : eagleNPCList)
+					{
+						if (!eagle->IsDeleted)
+						{
+							if (other->CheckPlayerInRange(eagle->Position.x / X_STEP, eagle->Position.y / Y_STEP))
+							{
+								inRange = true;
+								break;
+							}
+						}				
+					}
+				}
+			}
+		}
+
 
 		//check brick
 		for (auto brick : _map->getBrickListAroundEntity(_player->Position.x / X_STEP, _player->Position.y / Y_STEP))
 		{
 			_player->CheckCollision(brick);
+		}
+
+		//check eagle
+		for (auto eagle : eagleList)
+		{
+			_player->CheckCollision(eagle);
 		}
 
 		_player->HandleKeyboard(keyboard, dt);
@@ -247,9 +455,7 @@ void BattleScene::Draw()
 	}
 
 	//chỉ vẽ các objec ở trong camera
-
 	//_waterBrick->Draw();
-
 	//_map->Draw();
 
 	// tránh đường đi nằm phía trên NPC
@@ -261,9 +467,22 @@ void BattleScene::Draw()
 		}
 	}
 
+	if (IS_DRAW_PATH_ASTAR)
+	{
+		for (auto other : _playerList)
+		{
+			other->DrawPath();
+		}
+	}
+
 	for (auto npc : _npcList)
 	{
 		npc->Draw();
+	}
+
+	for (auto other : _playerList)
+	{
+		other->Draw();
 	}
 
 	_player->Draw();
@@ -288,10 +507,28 @@ void BattleScene::Draw()
 	_player->DrawArrow();
 	_pointed->Draw();
 
-	// vẽ điểm ng chơi
-	//_labelPlayer.setPosition(D3DXVECTOR2(850.0f, 100.0f));
-	//_labelPlayer.Draw("Player Score: " + to_string(_player->getScore()), D3DCOLOR_XRGB(255, 242, 0));
+	int eagleNPC =0; //lưu lại để vẽ
+	int eaglePlayer=0; //lưu lại để vẽ
 
+	for (auto e : eagleNPCList) 
+	{
+		if (!e->IsDeleted) eagleNPC += 1;
+		e->Draw();
+	}
+
+	for (auto e : eaglePlayerList)
+	{
+		if (!e->IsDeleted) eaglePlayer += 1;
+		e->Draw();
+	}
+
+	// vẽ điểm ng chơi theo tọa độ của camera => di chuyển cùng camera
+	_labelPlayer.setPosition(D3DXVECTOR2(camera->posX - X_MAX / 2 + X_STEP * 0.5f, camera->posY - Y_MAX / 2));
+	_labelPlayer.Draw("x "+ to_string(eaglePlayer), D3DCOLOR_XRGB(255, 242, 0));
+
+	//vẽ điểm NPC
+	_labelNPC.setPosition(D3DXVECTOR2(camera->posX + X_MAX / 2 - X_STEP * 2.5f, camera->posY - Y_MAX / 2));
+	_labelNPC.Draw("x " + to_string(eagleNPC), D3DCOLOR_XRGB(255, 242, 0));
 }
 
  bool BattleScene::RandomGridTileMove(GridTile *grid)

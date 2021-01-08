@@ -20,7 +20,7 @@ void NPCSecurity::Init()
 	//chỉ di chuyển quanh 1 vùng được định sẵn
 	_speed = 100.0f;
 	_heart = rand() % 3 + 2; //2=> 4
-	_rangeAttack = rand() % 9 + 6; //6 => 8
+	_rangeAttack = rand() % 8 + 6; 
 	_timeDelayShoot = 4.0f;
 
 	//màu đỏ

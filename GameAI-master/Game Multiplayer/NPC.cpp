@@ -269,7 +269,7 @@ void NPC::AutoMove(float dt)
 		//sort từ gần đến xa NPC (ưu tiên đi tới điểm gần)
 		int xRound = posX < vecPlayer->x ? posX - _rangeAttack : posX + _rangeAttack;
 		int yRound = posY < vecPlayer->y ? posY - _rangeAttack : posY + _rangeAttack;
-		std::vector<Vec2*> validList = Astar::getInstance()->GetListVecInAxisValid(vecPlayer->x, vecPlayer->y, xRound, yRound);
+		std::vector<Vec2*> validList = Astar::getInstance()->GetListVecInAxisValid(vecPlayer->x, vecPlayer->y, xRound, yRound, 0);
 		Vec2 vecAttack;
 		if (!validList.empty())
 		{

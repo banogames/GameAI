@@ -279,16 +279,16 @@ bool Astar::RandomoPosValidAround(Vec2 pos0, Vec2 *pos, int range)
 	return false;
 }
 
-std::vector<Vec2*> Astar::GetListVecInAxisValid(int x, int y, int xRound, int yRound)
+std::vector<Vec2*> Astar::GetListVecInAxisValid(int x, int y, int xRound, int yRound, int counBrick)
 {
 	std::vector<Vec2*> validList;
 
 	//xét bề ngang
 	//quét từ player ra 2 bên, cho phép bắn qua 1 viên gạch
-	int countBrick = 0;
+	int _countBrick = 0;
 
 	int _dtX = xRound > x ? 1 : -1;
-	while (xRound!=x && countBrick <=1)
+	while (xRound!=x && _countBrick <=counBrick)
 	{
 		if (isValid(x, y))
 		{
@@ -298,17 +298,17 @@ std::vector<Vec2*> Astar::GetListVecInAxisValid(int x, int y, int xRound, int yR
 			}
 			else
 			{
-				countBrick++;
+				_countBrick++;
 			}
 		}
 		
 		x += _dtX;
 	}
 
-	countBrick = 0;
+	_countBrick = 0;
 	//xét bề dọc
 	int _dtY = yRound > y ? 1 : -1;
-	while (yRound!=y && countBrick <= 1)
+	while (yRound!=y && _countBrick <= counBrick)
 	{
 		if (isValid(x, y))
 		{
@@ -318,11 +318,13 @@ std::vector<Vec2*> Astar::GetListVecInAxisValid(int x, int y, int xRound, int yR
 			}
 			else
 			{
-				countBrick++;
+				_countBrick++;
 			}
 		}
 		y += _dtY;
 	}
+
+	if (validList.empty()) return GetListVecInAxisValid(x, y, xRound, yRound, counBrick + 1);
 	return validList;
 }
 
@@ -336,7 +338,7 @@ Vec2* Astar::RandomVecInAxisValid(Vec2 vecMine, Vec2 vecOther, int range)
 {
 	int xRound = vecMine.x < vecOther.x ? vecMine.x - range : vecOther.x + range;
 	int yRound = vecMine.y < vecOther.y ? vecMine.y - range : vecMine.y + range;
-	std::vector<Vec2*> validList = GetListVecInAxisValid(vecOther.x, vecOther.y, xRound, yRound);
+	std::vector<Vec2*> validList = GetListVecInAxisValid(vecOther.x, vecOther.y, xRound, yRound, 0);
 	Vec2* vecResult = new Vec2(vecOther.x, vecOther.y);
 	double dirResult;
 	if (!validList.empty())

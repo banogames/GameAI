@@ -20,7 +20,7 @@ void PlayerSecurity::Init()
 	//chỉ di chuyển quanh 1 vùng được định sẵn
 	_speed = 100.0f;
 	_heart = rand() % 3 + 2; //2=> 4
-	_rangeAttack = rand() % 9 + 6; //6 => 8
+	_rangeAttack = rand() % 5 + 5; //6 => 8
 	_timeDelayShoot = 4.0f;
 
 	//màu vàng cấp 2

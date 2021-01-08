@@ -14,7 +14,7 @@ void NPCFast::Init()
 	//máu ít, tốc độ nhanh, vùng bắn rộng
 	_speed = 150.0f;
 	_heart = rand() % 3 + 4; //4=> 6
-	_rangeAttack = rand() % 5 + 10; //10 => 14
+	_rangeAttack = rand() % 5 + 8; //10 => 14
 	_timeDelayShoot = 2.0f;
 
 	//màu trắng

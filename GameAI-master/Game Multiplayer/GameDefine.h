@@ -10,11 +10,16 @@
 
 //count npc, player
 const int COUNT_PLAYER_SECURITY = 5;
-const int COUNT_PLAYER_OTHER = 6;
+const int COUNT_PLAYER_OTHER = 5;
 
-const int COUNT_NPC_FAST = 10;
+const int COUNT_NPC_FAST = 12;
 const int COUNT_NPC_TANK = 6;
 const int COUNT_NPC_SECURITY = 5;
+
+const int COUNT_PROTECT_ITEM = 20;
+const int COUNT_HEAL_ITEM = 20;
+const float TIME_SPAWN_ITEM = 1.f;
+const float TIME_SHIELD = 10.f; //10 s được bảo vệ
 
 const int COUNT_X = 120; //X_MAX / X_STEP;
 const int COUNT_Y = 120; //Y_MAX / Y_STEP;
@@ -32,20 +37,24 @@ const bool IS_DRAW_PATH_ASTAR = true; //test
 const int VALUE_ASTAR_PLAYER = 1;
 const int VALUE_ASTAR_NPC = 1;
 const int VALUE_ASTAR_BRICK = 1;
+const int VALUE_ASTAR_EAGLE = 1;
+const int VALUE_ASTAR_ITEM = 0;
 
 // [0, 10] => 4 bit
 enum EntityType
 {
 	ET_Unknown,
 	ET_Player, 
+	ET_NPC,
 	ET_Bullet,
 	ET_Boundary, 
 	ET_NormalBrick, 
 	ET_MetalBrick, 
 	ET_Water,
+	ET_Grass,
 	ET_ProtectItem, 
 	ET_UpgradeItem,
-	ET_NPC,
+	ET_HealItem,
 	ET_EaglePlayer,
 	ET_EagleNPC
 };

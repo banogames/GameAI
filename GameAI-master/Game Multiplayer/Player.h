@@ -17,9 +17,12 @@ class Player : public Entity
 	bool _isShield = false;
 	int _level = 3;
 	int _score = 0;
+	int _maxHeart = 0;
 	int _color_Position = 0;
 
 	const float _time_BetweenShoots = 0.7f;
+
+	float _time_Shield = 0.f;
 	float _count_Shoot = 0.0f;
 	int _currentBullet;
 
@@ -68,4 +71,11 @@ public:
 	void Move(D3DXVECTOR2 destination);
 	void Stop(D3DXVECTOR2 preDestination, D3DXVECTOR2 currentDestination);
 
+	void DecreasedHeart(int _value = 1) override 
+	{
+		if (!_isShield) 
+		{
+			Entity::DecreasedHeart(_value);
+		}
+	}
 };

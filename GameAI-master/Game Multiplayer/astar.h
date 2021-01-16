@@ -63,7 +63,7 @@ public:
 	bool RandomPosValid(Vec2 *pos);  //random lấy tọa độ rỗng
 	bool RandomoPosValidAround(Vec2 pos0, Vec2 *pos, int range); //random xung quanh 1 điểm với bán kính
 	//get list node valid 
-	std::vector<Vec2*> GetListVecInAxisValid(int x, int y, int xRound, int yRound, int counBrick);
+	std::vector<Vec2> GetListVecInAxisValid(int x, int y, int xRound, int yRound, int counBrick);
 	Vec2* RandomVecInAxisValid(Vec2 vecMine, Vec2 vecOther, int range);
 public:
 	bool isValid(int x, int y);

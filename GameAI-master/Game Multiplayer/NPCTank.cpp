@@ -14,6 +14,7 @@ void NPCTank::Init()
 	//máu nhiều, tốc độ chậm, vùng bắn hẹp
 	_speed = 80.0f;
 	_heart = rand() % 3 + 8; //8=> 10
+	_maxHeart = _heart;
 	_rangeAttack = rand() % 3 + 4; //4 => 6
 	_timeDelayShoot = 6.0f;
 

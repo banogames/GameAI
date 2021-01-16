@@ -2,7 +2,7 @@
 #include <array>
 
 #include "GridTile.h"
-#
+
 
 #include "Scene.h"
 #include "GameMap.h"
@@ -17,7 +17,8 @@
 #include "Explosion.h"
 #include "ProtectItem.h"
 #include "UpgradeItem.h"
-#include "Pointed.h"
+#include "HealItem.h"
+//#include "Pointed.h"
 #include "Water.h"
 #include "Camera.h"
 
@@ -41,12 +42,15 @@ class BattleScene : public Scene
 	vector<Eagle*> eagleNPCList;
 	vector<Eagle*> eaglePlayerList;
 
-	ProtectItem* _protectItem;
-	UpgradeItem* _upgradeItem;
-	Pointed* _pointed;
+	float _timeSpawnProtect;
+	float _timeSpawnHeal;
+	vector<ProtectItem*> _protectItemList;
+	vector<HealItem*> _healItemList;
+	//Pointed* _pointed;
 
 	Label _labelPlayer;
 	Label _labelNPC;
+	Label _labelGame;
 	//Label _labelCountTime;
 
 	Water* _waterBrick;

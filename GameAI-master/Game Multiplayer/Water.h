@@ -11,8 +11,8 @@ public:
 		_type = ET_Water;
 
 		// thêm frame animation
-		_animation->addFrameInfo(FrameInfo(SpriteList::Instance()->tileset, 0, 0 + 16, 160, 160 + 16,
-			D3DXVECTOR2(8.f, 8.f)));
+		_animation->addFrameInfo(FrameInfo(SpriteList::Instance()->tileset, 32, 32 + 32, 96, 96 + 32,
+			D3DXVECTOR2(16.f, 16.f)));
 	}
 	~Water() {}
 };

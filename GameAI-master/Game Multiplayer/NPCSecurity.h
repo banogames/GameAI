@@ -4,10 +4,10 @@
 class NPCSecurity: public NPC
 {
 public:
-	NPCSecurity(Vec2 posEagle, int rangeSave);
+	NPCSecurity(Eagle *eagle, int rangeSave);
 	~NPCSecurity() {};
 
-	Vec2* _posEagle; //tọa độ bảo vệ, luôn random di chuyển xung quang tọa độ bảo vệ
+	Eagle* _eagle; //tọa độ bảo vệ, luôn random di chuyển xung quang tọa độ bảo vệ
 	int _rangeSave; //khoảng cách bảo vệ
 
 	void Init() override;

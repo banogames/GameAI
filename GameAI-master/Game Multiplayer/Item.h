@@ -6,7 +6,7 @@
 class Item : public Entity
 {
 private:
-	const float _existTime = 7.0f;
+	const float _existTime = 20.0f; //tồn tại 20s
 	float _count_existTime = 0.0f; // đếm
 	int _flashingTime = 0; // giúp vẽ nhấp nháy
 
@@ -61,6 +61,13 @@ public:
 		{
 			_animation->Draw(Position);
 		}
+	}
+
+	void SetPosition(float x, float y)
+	{
+		Position = D3DXVECTOR2(x, y);
+
+		Astar::getInstance()->SetValue(x / X_STEP, y / Y_STEP, VALUE_ASTAR_ITEM);
 	}
 };
 

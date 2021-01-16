@@ -56,6 +56,12 @@ public:
 		Position += Velocity * _dt;
 	}
 
+	void SpawnExplosion() 
+	{
+		IsDeleted = true;
+		_explosion.Spawn(Position);
+	}
+
 	void Draw() override
 	{
 		_explosion.Draw();
@@ -69,18 +75,27 @@ public:
 
 	void CheckCollision(Entity * entity)
 	{
-		if (entity->IsDeleted) return;
+		if (entity->IsDeleted) 
+			return;
 		if (IsDeleted)
+			return;
+
+		if (!CanCollision(entity)) return;
+
+		if (entity->getType() == ET_Bullet) 
 			return;
 		CollisionResult cR = GameCollision::getCollisionResult(this, entity);
 		if (cR.IsCollided)
-		{
-			IsDeleted = true;
-			_explosion.Spawn(Position);
-
+		{			
 			//kiểm tra đối tượng va chạm với đạn
 			switch (entity->getType())
 			{
+			case ET_Boundary:
+				SpawnExplosion();
+				break;
+			case ET_MetalBrick:
+				SpawnExplosion();
+				break;
 				//nếu viên đạn của NPC bắn nổ brick => cập nhật lại astar tới điểm lưu
 			case ET_NormalBrick:
 				entity->DecreasedHeart();
@@ -88,8 +103,8 @@ public:
 				{
 					Astar::getInstance()->SetValue(entity->Position.x / X_STEP, entity->Position.y / Y_STEP, 0);
 				}
+				SpawnExplosion();
 				break;
-
 			case ET_NPC:
 				//nếu bắn trúng NPC
 				if (typePlayer == ET_Player) 
@@ -99,6 +114,7 @@ public:
 					{
 						Astar::getInstance()->SetValue(entity->Position.x / X_STEP, entity->Position.y / Y_STEP, 0);
 					}
+					SpawnExplosion();
 				}
 				break;
 
@@ -106,11 +122,12 @@ public:
 				//nếu bắn trúng Player
 				if (typePlayer == ET_NPC)
 				{
-					//entity->DecreasedHeart();
+					entity->DecreasedHeart();
 					if (entity->IsDeleted)
 					{
 						Astar::getInstance()->SetValue(entity->Position.x / X_STEP, entity->Position.y / Y_STEP, 0);
 					}
+					SpawnExplosion();
 				}
 				break;
 
@@ -122,6 +139,7 @@ public:
 					{
 						Astar::getInstance()->SetValue(entity->Position.x / X_STEP, entity->Position.y / Y_STEP, 0);
 					}
+					SpawnExplosion();
 				}
 				break;
 			case ET_EagleNPC:
@@ -132,6 +150,7 @@ public:
 					{
 						Astar::getInstance()->SetValue(entity->Position.x / X_STEP, entity->Position.y / Y_STEP, 0);
 					}
+					SpawnExplosion();
 				}
 				break;
 			default:

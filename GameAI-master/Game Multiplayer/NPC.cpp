@@ -22,10 +22,16 @@ void NPC::Init()
 	_upAnimation = new Animation();
 	_downAnimation = new Animation();
 
+
+	_shieldAnimation = new Animation(0.07f);
+	_shieldAnimation->addFrameInfo(FrameInfo(SpriteList::Instance()->Others, 0, 0 + 39, 111, 111 + 40, D3DXVECTOR2(20.f, 20.f)));
+	_shieldAnimation->addFrameInfo(FrameInfo(SpriteList::Instance()->Others, 39, 39 + 40, 111, 111 + 40, D3DXVECTOR2(20.f, 20.f)));
+
 	// mặc định animation ban đầu
 	_currentAnimation = _leftAnimation;
 	Position = D3DXVECTOR2(300.f, 300.f);
 	_isMoving = true;
+	_isShield = false;
 
 	// tạo 6 bullet cho player
 	for (int i = 0; i < 4; i++)
@@ -42,6 +48,8 @@ void NPC::Init()
 void NPC::SetPosition(float x, float y) 
 {
 	Position = D3DXVECTOR2(x, y);
+
+	Astar::getInstance()->SetValue(x / X_STEP, y / Y_STEP, VALUE_ASTAR_NPC);
 }
 
 void NPC::Update(float _dt)
@@ -55,6 +63,17 @@ void NPC::Update(float _dt)
 	AutoMove(_dt);
 
 	AutoShoot(_dt);
+
+	if (_isShield)
+	{
+		_shieldAnimation->Update(_dt);
+
+		_time_Shield += _dt;
+		if (_time_Shield > TIME_SHIELD) {
+			_isShield = false;
+			_time_Shield = 0;
+		}
+	}
 }
 
 void NPC::DrawPath() 
@@ -78,6 +97,9 @@ void NPC::Draw()
 
 	_currentAnimation->Draw(Position);
 
+	if (_isShield)
+		_shieldAnimation->Draw(Position);
+
 	_heatLabel.setPosition(Position);
 	_heatLabel.Draw(to_string(_heart), D3DCOLOR_XRGB(0, 255, 0));
 }
@@ -94,6 +116,10 @@ bool NPC::CheckCollision(Entity * e)
 
 	if (IsDeleted)
 		return false;
+
+	//kiểm tra vị trí không thể va chạm khỏi xét
+	if (!CanCollision(e)) return false;
+
 
 	CollisionResult cR = GameCollision::getCollisionResult(this, e);
 	if (cR.IsCollided)
@@ -137,6 +163,20 @@ bool NPC::CheckCollision(Entity * e)
 		if (!_isCollision && !_isDodging)
 		{
 			RunDodging(); //chạy né va chạm		
+		}
+
+		if (e->getType() == ET_ProtectItem)
+		{
+			//ăn item bảo vệ
+			_isShield = true;
+			e->IsDeleted = true;
+		}
+		else if (e->getType() == ET_HealItem)
+		{
+			//ăn item máu
+			_heart += e->_heart;
+			if (_heart > _maxHeart) _heart = _maxHeart;
+			e->IsDeleted = true;
 		}
 	}
 	return cR.IsCollided;
@@ -236,8 +276,9 @@ void NPC::AutoMove(float dt)
 {
 	if (_isCollision)
 	{
+		Stop();
 		_timeWaittingMove += dt;
-		if (_timeWaittingMove > 3) //đợi 3s rời va chạm
+		if (_timeWaittingMove > 2) //đợi 2s rời va chạm
 		{
 			_timeWaittingMove = 0;
 			RunDodging();
@@ -264,64 +305,68 @@ void NPC::AutoMove(float dt)
 		posX = (Position.x / X_STEP);
 		posY = (Position.y / Y_STEP);
 
-		_stateRun = S_RunAttack;
-
-		//sort từ gần đến xa NPC (ưu tiên đi tới điểm gần)
-		int xRound = posX < vecPlayer->x ? posX - _rangeAttack : posX + _rangeAttack;
-		int yRound = posY < vecPlayer->y ? posY - _rangeAttack : posY + _rangeAttack;
-		std::vector<Vec2*> validList = Astar::getInstance()->GetListVecInAxisValid(vecPlayer->x, vecPlayer->y, xRound, yRound, 0);
-		Vec2 vecAttack;
-		if (!validList.empty())
+		if (_stateRun == S_RunCollect) 
 		{
-			//sort lại theo list có khoảng cách nhỏ nhất (buble sort)
-			for (int i = 0; i < validList.size(); i++) 
+			_stateRun = S_RunAttack;
+			//đi tới item
+			PathAstar(vecPlayer->x, vecPlayer->y);
+		}
+		else {
+			_stateRun = S_RunAttack;
+			//sort từ gần đến xa NPC (ưu tiên đi tới điểm gần)
+			int xRound = posX < vecPlayer->x ? posX - _rangeAttack : posX + _rangeAttack;
+			int yRound = posY < vecPlayer->y ? posY - _rangeAttack : posY + _rangeAttack;
+			std::vector<Vec2> validList = Astar::getInstance()->GetListVecInAxisValid(vecPlayer->x, vecPlayer->y, xRound, yRound, 0);
+			Vec2 vecAttack;
+			if (!validList.empty())
 			{
-				// Last i elements are already in place  
-				for (int j = 0; j < validList.size() - i - 1; j++)
+				//sort lại theo list có khoảng cách nhỏ nhất (buble sort)
+				for (int i = 0; i < validList.size(); i++)
 				{
-					if (vec->distance(*validList.at(i)) < vec->distance(*validList.at(j)))
+					// Last i elements are already in place  
+					for (int j = 0; j < validList.size() - i - 1; j++)
 					{
-						//thay đổi giá trị
-						Vec2 vecTemp;
-						vecTemp.x = validList.at(i)->x;
-						vecTemp.y = validList.at(i)->y;
+						if (vec->distance(validList.at(i)) < vec->distance(validList.at(j)))
+						{
+							//thay đổi giá trị
+							Vec2 vecTemp;
+							vecTemp.x = validList.at(i).x;
+							vecTemp.y = validList.at(i).y;
 
-						validList.at(i)->x = validList.at(j)->x;
-						validList.at(i)->y = validList.at(j)->y;
+							validList.at(i).x = validList.at(j).x;
+							validList.at(i).y = validList.at(j).y;
 
-						validList.at(j)->x = vecTemp.x;
-						validList.at(j)->y = vecTemp.y;
+							validList.at(j).x = vecTemp.x;
+							validList.at(j).y = vecTemp.y;
+						}
 					}
-				}		
-			}
-				
-			for (auto vec : validList)
-			{
-				PathAstar(vec->x, vec->y);
-				if (!path.empty())
+				}
+
+				for (auto vec : validList)
 				{
-					printLog("Move attack");
-					vecAttack.x = vec->x;
-					vecAttack.y = vec->y;		
-					break;
+					PathAstar(vec.x, vec.y);
+					if (!path.empty())
+					{
+						printLog("Move attack");
+						vecAttack.x = vec.x;
+						vecAttack.y = vec.y;
+						break;
+					}
+				}
+
+				//xoay mặt về hướng player, lưu hướng bắn
+				if (vecPlayer->x == vecAttack.x)
+				{
+					_directionAttack = vecPlayer->y > vecAttack.y ? D_Down : D_Up;
+				}
+				else if (vecPlayer->y == vecAttack.y)
+				{
+					_directionAttack = vecPlayer->x > vecAttack.x ? D_Right : D_Left;
 				}
 			}
 
-			//xoay mặt về hướng player, lưu hướng bắn
-			if (vecPlayer->x == vecAttack.x)
-			{
-				_directionAttack = vecPlayer->y > vecAttack.y ? D_Down : D_Up;
-			}
-			else if (vecPlayer->y == vecAttack.y)
-			{
-				_directionAttack = vecPlayer->x > vecAttack.x ? D_Right : D_Left;
-			}
-			else
-			{
-				_directionAttack = _direction;
-			}
 		}
-
+		
 	}
 	
 	if (!path.empty())
@@ -331,6 +376,7 @@ void NPC::AutoMove(float dt)
 			if (_stateRun != S_RunAttack)
 			{
 				RunAstar();
+				//_ = false;
 			}
 			else
 			{
@@ -379,7 +425,7 @@ void NPC::AutoMove(float dt)
 
 void NPC::PredictCollision() 
 {
-	if (_isMoving && !_isCollision) 
+	if (_isMoving && !_isCollision && !_isDodging)
 	{
 		if (!path.empty())
 		{
@@ -629,9 +675,13 @@ void NPC::Stop()
 	printLog("Stop");
 }
 
-void NPC::SetIsCollision(bool isCollision) {
+void NPC::SetIsCollision(bool isCollision) {	
+	if (!_isCollision && isCollision) 
+	{
+		Stop();
+		RunDodging();	
+	}
 	_isCollision = isCollision;
-	if (_isCollision) Stop();
 }
 
 void NPC::MoveGridAstar(int x, int y)
@@ -661,32 +711,41 @@ void NPC::AutoShoot(float dt)
 		{
 			if (_currentBullet >= _bulletList.size())
 				_currentBullet = 0;
-			_bulletList.at(_currentBullet)->Shoot(Position, _directionBullet, _type);
+			_bulletList.at(_currentBullet)->Shoot(Position, _directionBullet , _type);
 			_currentBullet++;
 		}
 	}
 }
 
-bool NPC::CheckPlayerInRange(int x, int y) 
+bool NPC::CheckPlayerInRange(int x, int y, bool isCollect) 
 {
-	//kiểm tra player trong tầm bắn
-	int posX, posY;
-	posX = (Position.x / X_STEP);
-	posY = (Position.y / Y_STEP);
-
-	int left, right, top, bottom;
-
-	if (x <= posX + _rangeAttack && x >= posX - _rangeAttack && y <= posY + _rangeAttack && y >= posY - _rangeAttack) {
-		_isPlayerInRange = true;
-
-		vecPlayer->x = x;
-		vecPlayer->y = y;
-	}
-	else
+	if (_stateRun != S_RunNoAttack) 
 	{
-		_isPlayerInRange = false;
+		//kiểm tra player trong tầm bắn
+		int posX, posY;
+		posX = (Position.x / X_STEP);
+		posY = (Position.y / Y_STEP);
+
+		int left, right, top, bottom;
+
+		if (x <= posX + _rangeAttack && x >= posX - _rangeAttack && y <= posY + _rangeAttack && y >= posY - _rangeAttack) {
+			if (rand() % 100 < _ratioAttack)
+			{
+				_isPlayerInRange = true;
+				if (isCollect) _stateRun = S_RunCollect;
+				vecPlayer->x = x;
+				vecPlayer->y = y;
+			}
+			else {
+				_stateRun = S_RunNoAttack;
+			}
+		}
+		else
+		{
+			_isPlayerInRange = false;
+		}
+		return _isPlayerInRange;
 	}
-	return _isPlayerInRange;
 }
 
 #pragma endregion

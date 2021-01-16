@@ -40,12 +40,14 @@ Player::Player()
 		Bullet* bullet = new Bullet();
 		_bulletList.push_back(bullet);
 	}
+	_isShield = true;
 
 	_heart = 10;
+	_maxHeart = 10;
 
 	_heatLabel = Label(to_string(_heart), 20, 15, Position);
-	
 }
+
 
 void Player::Update(float _dt)
 {
@@ -61,8 +63,17 @@ void Player::Update(float _dt)
 
 	Position += Velocity * _dt;
 
-	if (_isShield)
+	if (_isShield) 
+	{
 		_shieldAnimation->Update(_dt);
+
+		_time_Shield += _dt;
+		if (_time_Shield > TIME_SHIELD) {
+			_isShield = false;
+			_time_Shield = 0;
+		}
+	}
+		
 }
 
 void Player::HandleKeyboard(std::map<int, bool> keys, float _dt)
@@ -409,6 +420,8 @@ void Player::CheckCollision(Entity * entity)
 {
 	if (entity->IsDeleted) return;
 
+	if (!CanCollision(entity)) return;
+
 	//check collision bullet
 	for (auto bullet : _bulletList)
 	{
@@ -438,13 +451,20 @@ void Player::CheckCollision(Entity * entity)
 			Position.y -= (float)(cR.Rect.bottom - cR.Rect.top) - 1;
 		}
 
-
-		//kiểm tra đối tượng va chạm
-		//nếu là đạn địch => mất máu
-
+		if (entity->getType() == ET_ProtectItem) 
+		{
+			//ăn item bảo vệ
+			_isShield = true;
+			entity->IsDeleted = true;
+		}
+		else if (entity->getType() == ET_HealItem) 
+		{
+			//ăn item máu
+			_heart += entity->_heart;
+			if (_heart > _maxHeart) _heart = _maxHeart;
+			entity->IsDeleted = true;
+		}
 	}
-
-
 }
 
 

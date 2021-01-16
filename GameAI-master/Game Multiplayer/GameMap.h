@@ -13,6 +13,7 @@
 #include "Water.h"
 #include "Boundary.h"
 #include "Eagle.h"
+#include "Grass.h"
 #include "GameCollision.h"
 #include "GameDebugDraw.h"
 #include "QuadTree.h"
@@ -21,10 +22,12 @@ class GameMap
 {
 	//mảng map bricks
 	std::array < std::array<Brick*, COUNT_Y>, COUNT_X> _bricks;
+	std::array < std::array<Grass*, COUNT_Y>, COUNT_X> _grassies;
 
 	std::vector<Brick*> _brickList;	
 	std::vector<BrickNormal*> _brickNorList;
 	std::vector<Eagle*> _eagleList;
+	std::vector<Grass*> _grassList;
 	Tmx::Map *_map;
 	std::map<int, Sprite*>  _tilesetList;
 	GameDebugDraw* _debugDraw;
@@ -40,6 +43,7 @@ public:
 	~GameMap() {}
 	void Draw();
 	void DrawInCamera(int posXMin, int posXMax, int posYMin, int posYMax);
+	void DrawGrassInCamera(int posXMin, int posXMax, int posYMin, int posYMax);
 	Tmx::Map* getMap() { return _map; }
 	std::vector<Brick*> getBrickList() { return _brickList; }
 	std::vector<BrickNormal*> getBrickNorList() { return _brickNorList; }
@@ -47,5 +51,7 @@ public:
 
 	//get list brick around entity
 	std::vector<Brick*> getBrickListAroundEntity(int posX, int posY);
+
+	bool checkIsGrass(int posX, int posY);
 };
 

@@ -157,7 +157,9 @@
     <ClInclude Include="GameTime.h" />
     <ClInclude Include="Game.h" />
     <ClInclude Include="GraphicsDevice.h" />
+    <ClInclude Include="Grass.h" />
     <ClInclude Include="GridTile.h" />
+    <ClInclude Include="HealItem.h" />
     <ClInclude Include="Item.h" />
     <ClInclude Include="Label.h" />
     <ClInclude Include="MapReader\base64.h" />
@@ -192,7 +194,6 @@
     <ClInclude Include="Player.h" />
     <ClInclude Include="PlayerOther.h" />
     <ClInclude Include="PlayerSecurity.h" />
-    <ClInclude Include="Pointed.h" />
     <ClInclude Include="ProtectItem.h" />
     <ClInclude Include="QuadTree.h" />
     <ClInclude Include="SceneManager.h" />

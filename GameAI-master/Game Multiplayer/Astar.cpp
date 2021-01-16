@@ -196,7 +196,7 @@ AstarResuit Astar::findPath(Node begin, Node dest)
 					else if (!closedList[x + newX][y + newY])
 					{
 						if (newX == 0 || newY == 0)
-							gNew = node.gCost + 1.5;
+							gNew = node.gCost + 2.5f;
 						else
 							continue;
 						hNew = calculateH(x + newX, y + newY, dest);
@@ -279,53 +279,61 @@ bool Astar::RandomoPosValidAround(Vec2 pos0, Vec2 *pos, int range)
 	return false;
 }
 
-std::vector<Vec2*> Astar::GetListVecInAxisValid(int x, int y, int xRound, int yRound, int counBrick)
+std::vector<Vec2> Astar::GetListVecInAxisValid(int x, int y, int xRound, int yRound, int counBrick)
 {
-	std::vector<Vec2*> validList;
-
-	//xét bề ngang
-	//quét từ player ra 2 bên, cho phép bắn qua 1 viên gạch
-	int _countBrick = 0;
-
-	int _dtX = xRound > x ? 1 : -1;
-	while (xRound!=x && _countBrick <=counBrick)
+	try 
 	{
-		if (isValid(x, y))
+		std::vector<Vec2> validList;
+
+		//xét bề ngang
+		//quét từ player ra 2 bên, cho phép bắn qua 1 viên gạch
+		int _countBrick = 0;
+
+		int _dtX = xRound > x ? 1 : -1;
+		while (xRound != x && _countBrick <= counBrick)
 		{
-			if (!isObstacle(x, y, map)) {
-				Vec2* vec = new Vec2(x, y);
-				validList.push_back(vec);
-			}
-			else
+			if (isValid(x, y))
 			{
-				_countBrick++;
+				if (!isObstacle(x, y, map)) {
+					validList.push_back(*new Vec2(x, y));
+				}
+				else
+				{
+					_countBrick++;
+				}
 			}
+
+			x += _dtX;
 		}
+
+		_countBrick = 0;
+		//xét bề dọc
+		int _dtY = yRound > y ? 1 : -1;
+		while (yRound != y && _countBrick <= counBrick)
+		{
+			if (isValid(x, y))
+			{
+				if (!isObstacle(x, y, map)) {
+					validList.push_back(*new Vec2(x, y));
+				}
+				else
+				{
+					_countBrick++;
+				}
+			}
+			y += _dtY;
+		}
+
+		if (validList.empty())
+		{
+			return GetListVecInAxisValid(x, y, xRound, yRound, counBrick + 1);
+		}
+		return validList;
+	}
+	catch (exception e)
+	{
 		
-		x += _dtX;
 	}
-
-	_countBrick = 0;
-	//xét bề dọc
-	int _dtY = yRound > y ? 1 : -1;
-	while (yRound!=y && _countBrick <= counBrick)
-	{
-		if (isValid(x, y))
-		{
-			if (!isObstacle(x, y, map)) {
-				Vec2* vec = new Vec2(x, y);
-				validList.push_back(vec);
-			}
-			else
-			{
-				_countBrick++;
-			}
-		}
-		y += _dtY;
-	}
-
-	if (validList.empty()) return GetListVecInAxisValid(x, y, xRound, yRound, counBrick + 1);
-	return validList;
 }
 
 double calculateVecH(Vec2 vec0, Vec2 vec1) {
@@ -338,22 +346,25 @@ Vec2* Astar::RandomVecInAxisValid(Vec2 vecMine, Vec2 vecOther, int range)
 {
 	int xRound = vecMine.x < vecOther.x ? vecMine.x - range : vecOther.x + range;
 	int yRound = vecMine.y < vecOther.y ? vecMine.y - range : vecMine.y + range;
-	std::vector<Vec2*> validList = GetListVecInAxisValid(vecOther.x, vecOther.y, xRound, yRound, 0);
+	std::vector<Vec2> validList = GetListVecInAxisValid(vecOther.x, vecOther.y, xRound, yRound, 0);
 	Vec2* vecResult = new Vec2(vecOther.x, vecOther.y);
 	double dirResult;
 	if (!validList.empty())
 	{
-		vecResult = validList.at(0);
+		vecResult->x = validList.at(0).x;
+		vecResult->y = validList.at(0).y;
 		dirResult = calculateVecH(vecMine, *vecResult);
 		for (auto vec : validList)
 		{
-			if (calculateVecH(vecMine, *vec) < dirResult)
+			if (calculateVecH(vecMine, vec) < dirResult)
 			{
-				vecResult = vec;
-				dirResult = calculateVecH(vecMine, *vec);
+				vecResult->x = vec.x;
+				vecResult->y = vec.y;
+				dirResult = calculateVecH(vecMine, vec);
 			}
 		}
 	}
+	validList.clear();
 	return vecResult;
 }
 

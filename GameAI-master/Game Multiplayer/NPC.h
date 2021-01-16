@@ -13,13 +13,17 @@ enum NPCState
 	S_RunAstar,
 	S_RunDodging,
 	S_RunAttack,
-	S_Attacking
+	S_Attacking,
+	S_RunCollect,
+	S_RunNoAttack
 };
 
 class NPC :public Entity
 {
 protected:
 	float _speed = 100.f; //130.f;
+	int _maxHeart = 5; 
+	bool _isShield = false;
 	Direction _direction; // hướng di chuyển
 	Direction _directionAttack = D_Stand; // lưu hướng tấn công
 	Direction _directionBullet = D_Stand; //lưu hướng bắn đạn
@@ -33,6 +37,7 @@ protected:
 	Animation* _upAnimation;
 	Animation* _downAnimation;
 	Animation *_currentAnimation; // animation hiện tại
+	Animation* _shieldAnimation; // animation khiên 
 
 	Label _heatLabel;
 
@@ -65,6 +70,8 @@ protected:
 	float _timeWaittingMove = 0; //đếm thời gian
 	Vec2* _desSave = new Vec2(); //lưu vị trí cuối path
 
+	float _time_Shield = 0.f;
+
 	void AutoMove(float dt);
 	void Move(D3DXVECTOR2 destination);
 	
@@ -87,6 +94,7 @@ protected:
 	float _timeDelayShoot = 4; //delay 4s để bắn
 	int _currentBullet;
 	int _rangeAttack =8;
+	int _ratioAttack = 100; //50% sẽ đi bắn (tỷ lệ bắn mỗi lần quét)
 	bool _isPlayerInRange; //player trong tầm nhắm thì đuổi theo bắn player
 	Vec2* vecPlayer = new Vec2();
 
@@ -98,12 +106,20 @@ public:
 	//ở ngoài set đường đi cho bot
 	void MoveGridAstar(int x, int y);
 
-	bool CheckPlayerInRange(int x, int y);
+	bool CheckPlayerInRange(int x, int y, bool isCollect = false);
 	//nếu player ở trong vùng quét => astar tới chỗ có thể bắn được player
 	//chỗ bắn được player tính bằng trục ngang, trục dọc theo gird player
 	//di chuyển tới trục ngang, trục dọc không có vật cản để bắn
 
 	void DrawPath();
+
+	void DecreasedHeart(int _value = 1) override
+	{
+		if (!_isShield)
+		{
+			Entity::DecreasedHeart(_value);
+		}
+	}
 };
 
 

@@ -46,6 +46,7 @@ BattleScene::BattleScene()
 	eagleList = _map->getEagleList();
 	for (auto eagle : eagleList)
 	{
+		Astar::getInstance()->SetValue((eagle->Position.x / X_STEP), (eagle->Position.y / Y_STEP), VALUE_ASTAR_EAGLE);
 		switch (eagle->getType())
 		{
 		case ET_EagleNPC:
@@ -90,7 +91,7 @@ BattleScene::BattleScene()
 			vecEagle.y = eaglePlayerList.at(curEagle)->Position.y / Y_STEP;
 
 			//chạy xung quanh aegle 4 ô
-			PlayerSecurity* otherSec = new PlayerSecurity(vecEagle, 4);
+			PlayerSecurity* otherSec = new PlayerSecurity(eaglePlayerList.at(curEagle), 4);
 
 			NPC* other = static_cast<NPC *>(otherSec);
 			if (Astar::getInstance()->RandomoPosValidAround(vecEagle, pos, 6))
@@ -112,7 +113,6 @@ BattleScene::BattleScene()
 		if (Astar::getInstance()->RandomPosValid(pos))
 		{
 			npc->SetPosition(((float)pos->x + 0.5)* X_STEP, ((float)pos->y + 0.5)* Y_STEP);
-			Astar::getInstance()->SetValue(pos->x, pos->y, VALUE_ASTAR_NPC);
 		}
 		_npcList.push_back(npc);
 		_bulletList.insert(_bulletList.begin(), npc->_bulletList.begin(), npc->_bulletList.end());
@@ -126,7 +126,6 @@ BattleScene::BattleScene()
 		if (Astar::getInstance()->RandomPosValid(pos))
 		{
 			npc->SetPosition(((float)pos->x + 0.5)* X_STEP, ((float)pos->y + 0.5)* Y_STEP);
-			Astar::getInstance()->SetValue(pos->x, pos->y, VALUE_ASTAR_NPC);
 		}
 		_npcList.push_back(npc);
 		_bulletList.insert(_bulletList.begin(), npc->_bulletList.begin(), npc->_bulletList.end());
@@ -148,7 +147,7 @@ BattleScene::BattleScene()
 			vecEagle.y = eagleNPCList.at(curEagle)->Position.y / Y_STEP;
 
 			//chạy xung quanh aegle 4 ô
-			NPCSecurity* npcSec = new NPCSecurity(vecEagle, 4);
+			NPCSecurity* npcSec = new NPCSecurity(eaglePlayerList.at(curEagle), 4);
 
 			NPC* npc = static_cast<NPC *>(npcSec);
 			if (Astar::getInstance()->RandomoPosValidAround(vecEagle, pos, 6))
@@ -182,14 +181,24 @@ BattleScene::BattleScene()
 	}
 
 	// tạo 2 loại Protected Item và Upgrade Item
-	_protectItem = new ProtectItem(D3DXVECTOR2(250.0f, 250.0f));
-	_protectItem->IsDeleted = true;
-	_upgradeItem = new UpgradeItem(D3DXVECTOR2(350.0f, 350.0f));
-	_upgradeItem->IsDeleted = true;
-	_pointed = new Pointed();
+	for (int i = 0; i < COUNT_PROTECT_ITEM; i++) 
+	{
+		ProtectItem *_protectItem = new ProtectItem(D3DXVECTOR2(250.0f, 250.0f));
+		_protectItem->IsDeleted = true;
+		_protectItemList.push_back(_protectItem);
+	}
+
+	for (int i = 0; i < COUNT_HEAL_ITEM; i++) 
+	{
+		HealItem *_healItem = new HealItem(D3DXVECTOR2(250.0f, 250.0f));
+		_healItem->IsDeleted = true;
+		_healItemList.push_back(_healItem);
+	}
+	//_pointed = new Pointed();
 
 	_labelPlayer = Label("", 40, 20, D3DXVECTOR2(0, 0));
 	_labelNPC = Label("", 40, 20, D3DXVECTOR2(0, 0));
+	_labelGame = Label("", 100, 50, D3DXVECTOR2(0, 0));
 }
 
 
@@ -200,11 +209,6 @@ void BattleScene::Update(float dt)
 		camera->Update();
 	}
 
-	//for (auto npc : _npcList) // set vận tốc npcs dựa theo direction 
-	//{
-	//	npc->ApplyVelocity();
-	//}
-
 	if (!_player->IsDeleted)
 	{
 		for (NPC *npc : _npcList) // players va chạm npcs
@@ -212,7 +216,7 @@ void BattleScene::Update(float dt)
 			npc->Update(dt);
 			if (!npc->IsDeleted)
 			{
-				bool _onColl = false;			
+				bool _onColl = false;		
 				if (npc->CheckCollision(_player)) 
 				{
 					if (_onColl == false)
@@ -257,6 +261,15 @@ void BattleScene::Update(float dt)
 							_onColl = true;
 					}
 				}
+				//check item
+				for (auto item : _protectItemList)
+				{
+					npc->CheckCollision(item);
+				}
+				for (auto item : _healItemList)
+				{
+					npc->CheckCollision(item);
+				}
 
 				npc->SetIsCollision(_onColl);
 
@@ -265,17 +278,24 @@ void BattleScene::Update(float dt)
 
 				//quét theo thứ tự: player => player other => player eagle
 				bool inRange = false;
-				inRange = npc->CheckPlayerInRange(_player->Position.x / X_STEP, _player->Position.y / Y_STEP);
+
+				if (!_map->checkIsGrass(_player->Position.x / X_STEP, _player->Position.y / Y_STEP))
+				{
+					inRange = npc->CheckPlayerInRange(_player->Position.x / X_STEP, _player->Position.y / Y_STEP);
+				}
 
 				if (!inRange) {
 					for (NPC *other : _playerList)
 					{
 						if (!other->IsDeleted) {
-							if (npc->CheckPlayerInRange(other->Position.x / X_STEP, other->Position.y / Y_STEP))
+							if (!_map->checkIsGrass(other->Position.x / X_STEP, other->Position.y / Y_STEP))
 							{
-								inRange = true;
-								break;
-							}
+								if (npc->CheckPlayerInRange(other->Position.x / X_STEP, other->Position.y / Y_STEP))
+								{
+									inRange = true;
+									break;
+								}
+							}			
 						}	
 					}
 				}
@@ -294,6 +314,36 @@ void BattleScene::Update(float dt)
 						}	
 					}
 				}	
+
+				if (!inRange)
+				{
+					for (HealItem* item : _healItemList)
+					{
+						if (!item->IsDeleted)
+						{
+							if (npc->CheckPlayerInRange(item->Position.x / X_STEP, item->Position.y / Y_STEP), true)
+							{
+								inRange = true;
+								break;
+							}
+						}
+					}
+				}
+
+				if (!inRange)
+				{
+					for (ProtectItem* item : _protectItemList)
+					{
+						if (!item->IsDeleted)
+						{
+							if (npc->CheckPlayerInRange(item->Position.x / X_STEP, item->Position.y / Y_STEP), true)
+							{
+								inRange = true;
+								break;
+							}
+						}
+					}
+				}
 			}
 		}
 
@@ -348,6 +398,16 @@ void BattleScene::Update(float dt)
 					}
 				}
 
+				//check item
+				for (auto item : _protectItemList)
+				{
+					other->CheckCollision(item);
+				}
+				for (auto item : _healItemList)
+				{
+					other->CheckCollision(item);
+				}
+
 				other->SetIsCollision(_onColl);
 
 				_player->CheckCollision(other);
@@ -355,16 +415,19 @@ void BattleScene::Update(float dt)
 
 				//quét theo thứ tự: npc => npc eagle
 				bool inRange = false;
-				if (!inRange) 
+				if (!inRange)
 				{
 					for (NPC *npc : _npcList)
 					{
-						if (!npc->IsDeleted) 
+						if (!npc->IsDeleted)
 						{
-							if (other->CheckPlayerInRange(npc->Position.x / X_STEP, npc->Position.y / Y_STEP))
+							if (!_map->checkIsGrass(npc->Position.x / X_STEP, npc->Position.y / Y_STEP))
 							{
-								inRange = true;
-								break;
+								if (other->CheckPlayerInRange(npc->Position.x / X_STEP, npc->Position.y / Y_STEP))
+								{
+									inRange = true;
+									break;
+								}
 							}
 						}
 					}
@@ -380,7 +443,37 @@ void BattleScene::Update(float dt)
 								inRange = true;
 								break;
 							}
-						}				
+						}
+					}
+				}
+
+				if (!inRange)
+				{
+					for (HealItem* item : _healItemList)
+					{
+						if (!item->IsDeleted)
+						{
+							if (other->CheckPlayerInRange(item->Position.x / X_STEP, item->Position.y / Y_STEP), true)
+							{
+								inRange = true;
+								break;
+							}
+						}
+					}
+				}
+
+				if (!inRange)
+				{
+					for (ProtectItem* item : _protectItemList)
+					{
+						if (!item->IsDeleted)
+						{
+							if (other->CheckPlayerInRange(item->Position.x / X_STEP, item->Position.y / Y_STEP), true)
+							{
+								inRange = true;
+								break;
+							}
+						}
 					}
 				}
 			}
@@ -398,13 +491,21 @@ void BattleScene::Update(float dt)
 		{
 			_player->CheckCollision(eagle);
 		}
+		//check item
+		for (auto item : _protectItemList)
+		{
+			_player->CheckCollision(item);
+		}
+		for (auto item : _healItemList)
+		{
+			_player->CheckCollision(item);
+		}
 
 		_player->HandleKeyboard(keyboard, dt);
 
 		_player->Update(dt);
 
 	}
-
 
 	for (auto bullet : _bulletList)
 	{
@@ -428,9 +529,54 @@ void BattleScene::Update(float dt)
 		{
 			explosion->Update(dt);
 		}
-		_protectItem->Update(dt);
-		_upgradeItem->Update(dt);
-		_pointed->Update(dt);
+
+		_timeSpawnProtect += dt;
+		if (_timeSpawnProtect > TIME_SPAWN_ITEM) 
+		{
+			_timeSpawnProtect = 0;
+			for (auto protectItem : _protectItemList)
+			{
+				if (protectItem->IsDeleted) 
+				{
+					protectItem->IsDeleted = false;
+					Vec2 *pos = new Vec2();
+					if (Astar::getInstance()->RandomPosValid(pos))
+					{
+						protectItem->SetPosition(((float)pos->x + 0.5)* X_STEP, ((float)pos->y + 0.5)* Y_STEP);
+					}
+					break;
+				}
+			}
+		}
+
+		_timeSpawnHeal += dt;
+		if (_timeSpawnHeal > TIME_SPAWN_ITEM)
+		{
+			_timeSpawnHeal = 0;
+			for (auto healItem : _healItemList)
+			{
+				if (healItem->IsDeleted)
+				{
+					healItem->IsDeleted = false;
+					Vec2 *pos = new Vec2();
+					if (Astar::getInstance()->RandomPosValid(pos))
+					{
+						healItem->SetPosition(((float)pos->x + 0.5)* X_STEP, ((float)pos->y + 0.5)* Y_STEP);
+					}
+					break;
+				}
+			}
+		}
+
+		for (auto protectItem : _protectItemList) 
+		{
+			protectItem->Update(dt);
+		}
+		for (auto healItem : _healItemList)
+		{
+			healItem->Update(dt);
+		}
+		//_pointed->Update(dt);
 	}
 
 
@@ -447,16 +593,12 @@ void BattleScene::Update(float dt)
 
 void BattleScene::Draw()
 {
-	if (camera)
-	{
-		camera->Draw();
-		_map->DrawInCamera((camera->posX - camera->width/2)/X_STEP, (camera->posX + camera->width / 2)/X_STEP, 
-			(camera->posY - camera->height / 2)/Y_STEP, (camera->posY + camera->height / 2)/Y_STEP);
-	}
-
 	//chỉ vẽ các objec ở trong camera
-	//_waterBrick->Draw();
-	//_map->Draw();
+	if (!camera) return;
+
+	camera->Draw();
+	_map->DrawInCamera((camera->posX - camera->width / 2) / X_STEP, (camera->posX + camera->width / 2) / X_STEP,
+		(camera->posY - camera->height / 2) / Y_STEP, (camera->posY + camera->height / 2) / Y_STEP);
 
 	// tránh đường đi nằm phía trên NPC
 	if (IS_DRAW_PATH_ASTAR) 
@@ -477,12 +619,18 @@ void BattleScene::Draw()
 
 	for (auto npc : _npcList)
 	{
-		npc->Draw();
+		if (!_map->checkIsGrass(npc->Position.x / X_STEP, npc->Position.y / Y_STEP))
+		{
+			npc->Draw();
+		}	
 	}
 
 	for (auto other : _playerList)
 	{
-		other->Draw();
+		if (!_map->checkIsGrass(other->Position.x / X_STEP, other->Position.y / Y_STEP)) 
+		{
+			other->Draw();
+		}	
 	}
 
 	_player->Draw();
@@ -501,11 +649,17 @@ void BattleScene::Draw()
 	{
 		e->Draw();
 	}
+	for (auto protectItem : _protectItemList)
+	{
+		protectItem->Draw();
+	}
+	for (auto healItem : _healItemList)
+	{
+		healItem->Draw();
+	}
 
-	_protectItem->Draw();
-	_upgradeItem->Draw();
 	_player->DrawArrow();
-	_pointed->Draw();
+	//_pointed->Draw();
 
 	int eagleNPC =0; //lưu lại để vẽ
 	int eaglePlayer=0; //lưu lại để vẽ
@@ -529,6 +683,20 @@ void BattleScene::Draw()
 	//vẽ điểm NPC
 	_labelNPC.setPosition(D3DXVECTOR2(camera->posX + X_MAX / 2 - X_STEP * 2.5f, camera->posY - Y_MAX / 2));
 	_labelNPC.Draw("x " + to_string(eagleNPC), D3DCOLOR_XRGB(255, 242, 0));
+
+	if (eaglePlayer <= 0 || _player->IsDeleted) {
+		_labelGame.setPosition(D3DXVECTOR2(camera->posX , camera->posY ));
+		_labelGame.Draw("You lose", D3DCOLOR_XRGB(255, 242, 0));
+	}
+	else if (eagleNPC <=0) {
+		_labelGame.setPosition(D3DXVECTOR2(camera->posX, camera->posY));
+		_labelGame.Draw("You win", D3DCOLOR_XRGB(255, 242, 0));
+	}
+
+
+	//vẽ grass	
+	_map->DrawGrassInCamera((camera->posX - camera->width / 2) / X_STEP, (camera->posX + camera->width / 2) / X_STEP,
+		(camera->posY - camera->height / 2) / Y_STEP, (camera->posY + camera->height / 2) / Y_STEP);
 }
 
  bool BattleScene::RandomGridTileMove(GridTile *grid)

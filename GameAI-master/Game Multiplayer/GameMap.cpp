@@ -28,65 +28,67 @@ void GameMap::LoadMap(char* filePath)
 		if (layer->GetName() == "Brick" || 
 			layer->GetName() == "Metal Brick" || 
 			layer->GetName() == "Water" || 
+			layer->GetName() == "Grass" || 
 			layer->GetName() == "Boundary" || 
 			layer->GetName() == "Eagle NPC" || 
 			layer->GetName() == "Eagle Player")
 		{
-			/*for (int j = 0; j < _map->GetNumTilesets(); j++)
+			int tileWidth = _map->GetTileWidth();
+			int tileHeight = _map->GetTileHeight();
+
+			for (int m = 0; m < layer->GetHeight(); m++)
 			{
-				const Tmx::Tileset *tileSet = _map->GetTileset(j);
-*/
-				int tileWidth = _map->GetTileWidth();
-				int tileHeight = _map->GetTileHeight();
-
-				for (int m = 0; m < layer->GetHeight(); m++)
+				for (int n = 0; n < layer->GetWidth(); n++)
 				{
-					for (int n = 0; n < layer->GetWidth(); n++)
+					if (layer->GetTileTilesetIndex(n, m) != -1)
 					{
-						if (layer->GetTileTilesetIndex(n, m) != -1)
-						{
-							// tọa độ object
-							D3DXVECTOR2 pos((float)(n * tileWidth + tileWidth / 2), 
-								(float)(m * tileHeight + tileHeight / 2));
+						// tọa độ object
+						D3DXVECTOR2 pos((float)(n * tileWidth + tileWidth / 2),
+							(float)(m * tileHeight + tileHeight / 2));
 
-							if (layer->GetName() == "Brick")
-							{
-								Brick* brick = new BrickNormal(pos);
-								_brickNorList.push_back((BrickNormal*)brick);
-								_brickList.push_back(brick);
-								_bricks[pos.x / X_STEP][pos.y / Y_STEP] = brick;
-							}
-							else if (layer->GetName() == "Metal Brick")
-							{
-								Brick* brick = new MetalBrick(pos);
-								_brickList.push_back(brick);
-								_bricks[pos.x / X_STEP][pos.y / Y_STEP] = brick;
-							}
-							else if (layer->GetName() == "Water")
-							{
-								Brick* brick = new Water(pos);
-								_brickList.push_back(brick);
-								_bricks[pos.x / X_STEP][pos.y / Y_STEP] = brick;
-							}
-							else if (layer->GetName() == "Boundary")
-							{
-								Brick* brick = new Boundary(pos);
-								_brickList.push_back(brick);
-								_bricks[pos.x / X_STEP][pos.y / Y_STEP] = brick;
-							}
-							else if (layer->GetName() == "Eagle NPC")
-							{
-								Eagle *eagle = new Eagle(pos, ET_EagleNPC);
-								_eagleList.push_back(eagle);
-							}	
-							else if (layer->GetName() == "Eagle Player")
-							{
-								Eagle *eagle = new Eagle(pos, ET_EaglePlayer);
-								_eagleList.push_back(eagle);
-							}
+						if (layer->GetName() == "Brick")
+						{
+							Brick* brick = new BrickNormal(pos);
+							_brickNorList.push_back((BrickNormal*)brick);
+							_brickList.push_back(brick);
+							_bricks[pos.x / X_STEP][pos.y / Y_STEP] = brick;
+						}
+						else if (layer->GetName() == "Metal Brick")
+						{
+							Brick* brick = new MetalBrick(pos);
+							_brickList.push_back(brick);
+							_bricks[pos.x / X_STEP][pos.y / Y_STEP] = brick;
+						}
+						else if (layer->GetName() == "Water")
+						{
+							Brick* brick = new Water(pos);
+							_brickList.push_back(brick);
+							_bricks[pos.x / X_STEP][pos.y / Y_STEP] = brick;
+						}
+						else if (layer->GetName() == "Grass")
+						{
+							Grass *grass = new Grass(pos);
+							_grassList.push_back(grass);
+							_grassies[pos.x / X_STEP][pos.y / Y_STEP] = grass;
+						}
+						else if (layer->GetName() == "Boundary")
+						{
+							Brick* brick = new Boundary(pos);
+							_brickList.push_back(brick);
+							_bricks[pos.x / X_STEP][pos.y / Y_STEP] = brick;
+						}
+						else if (layer->GetName() == "Eagle NPC")
+						{
+							Eagle *eagle = new Eagle(pos, ET_EagleNPC);
+							_eagleList.push_back(eagle);
+						}
+						else if (layer->GetName() == "Eagle Player")
+						{
+							Eagle *eagle = new Eagle(pos, ET_EaglePlayer);
+							_eagleList.push_back(eagle);
 						}
 					}
-				//}
+				}
 			}
 		}
 	}
@@ -186,18 +188,23 @@ void GameMap::DrawInCamera(int posXMin, int posXMax, int posYMin, int posYMax)
 			}
 		}	
 	}
+}
 
-	//vẽ eagle, ở game scene đã vẽ
-	/*for (int i = 0; i < (int)_eagleList.size(); i++)
+void GameMap::DrawGrassInCamera(int posXMin, int posXMax, int posYMin, int posYMax)
+{
+	//vẽ grass
+	for (int x = posXMin; x <= posXMax; x++)
 	{
-		if (_eagleList[i]->Position.x / X_STEP >= posXMin &&
-			_eagleList[i]->Position.x / X_STEP <= posXMax &&
-			_eagleList[i]->Position.y / Y_STEP >= posYMin &&
-			_eagleList[i]->Position.y / Y_STEP <= posYMax)
+		for (int y = posYMin; y <= posYMax; y++)
 		{
-			_eagleList[i]->Draw();
-		}		
-	}*/
+			if (x < COUNT_X && y < COUNT_Y
+				&& x >= 0 && y >= 0)
+			{
+				if (_grassies[x][y])
+					_grassies[x][y]->Draw();
+			}
+		}
+	}
 }
 
 vector<Brick*> GameMap::getBrickListAroundEntity(int posX, int posY)
@@ -227,4 +234,13 @@ vector<Brick*> GameMap::getBrickListAroundEntity(int posX, int posY)
 		}
 	}
 	return resuit;
+}
+
+bool GameMap::checkIsGrass(int posX, int posY) 
+{
+	if (!_grassies.empty()) 
+	{
+		return (_grassies[posX][posY]);
+	}
+	return false;
 }

@@ -1,13 +1,9 @@
 ﻿#include "PlayerSecurity.h"
 
-PlayerSecurity::PlayerSecurity(Vec2 posEagle, int rangeSave)
+PlayerSecurity::PlayerSecurity(Eagle *eagle, int rangeSave)
 {
 	Init();
-
-	_posEagle = new Vec2();
-	_posEagle->x = posEagle.x;
-	_posEagle->y = posEagle.y;
-
+	_eagle = eagle;
 	_rangeSave = rangeSave;
 }
 
@@ -20,7 +16,7 @@ void PlayerSecurity::Init()
 	//chỉ di chuyển quanh 1 vùng được định sẵn
 	_speed = 100.0f;
 	_heart = rand() % 3 + 2; //2=> 4
-	_rangeAttack = rand() % 5 + 5; //6 => 8
+	_rangeAttack = rand() % 4 +4;
 	_timeDelayShoot = 4.0f;
 
 	//màu vàng cấp 2
@@ -32,9 +28,21 @@ void PlayerSecurity::Init()
 
 void PlayerSecurity::RunRandom()
 {
-	Vec2 *pos = new Vec2();
-	if (Astar::getInstance()->RandomoPosValidAround(*_posEagle, pos, _rangeSave))
+	if (!_eagle->IsDeleted)
 	{
-		PathAstar(pos->x, pos->y);
+		Vec2 *pos = new Vec2();
+		Vec2 posEagle;
+		posEagle.x = _eagle->Position.x / X_STEP;
+		posEagle.y = _eagle->Position.y / Y_STEP;
+		if (Astar::getInstance()->RandomoPosValidAround(posEagle, pos, _rangeSave))
+		{
+			PathAstar(pos->x, pos->y);
+		}
+	}
+	else
+	{
+		NPC::RunRandom();
 	}
 }
+
+

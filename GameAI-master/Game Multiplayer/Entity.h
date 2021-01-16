@@ -25,9 +25,15 @@ public:
 	virtual void Update(float dt) {}
 	virtual void Draw() {}
 	virtual void MakeCollision(Entity* _en) {}	// thực hiện va chạm
+	virtual bool CanCollision(Entity* _en) 
+	{
+		return (abs(_en->Position.x / X_STEP - Position.x / X_STEP) < 3)
+			&& (abs(_en->Position.y / Y_STEP - Position.y / Y_STEP) < 3);
+	}	// có thể va chạm
 
 	RECT getBound();
-	void DecreasedHeart(int _value =1){
+	virtual void DecreasedHeart(int _value =1)
+	{
 		_heart -= _value;
 		if (_heart <= 0) IsDeleted = true;
 	}

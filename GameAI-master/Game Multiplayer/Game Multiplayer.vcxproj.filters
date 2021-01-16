@@ -40,6 +40,9 @@
     <Filter Include="Framework\Game Objects\Player">
       <UniqueIdentifier>{053f849a-66c8-4159-9a53-de48c57e9c1e}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Framework\Game Objects\Other map objs">
+      <UniqueIdentifier>{4f3bb477-9fb0-40c7-b9ad-28a0e47a3cd6}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="MapReader\tinyxml2.h">
@@ -123,9 +126,6 @@
     <ClInclude Include="Water.h">
       <Filter>Framework\Game Objects\Bricks</Filter>
     </ClInclude>
-    <ClInclude Include="Pointed.h">
-      <Filter>Framework\Game Objects</Filter>
-    </ClInclude>
     <ClInclude Include="Bullet.h">
       <Filter>Framework\Game Objects</Filter>
     </ClInclude>
@@ -143,9 +143,6 @@
     </ClInclude>
     <ClInclude Include="ProtectItem.h">
       <Filter>Framework\Game Objects\Item</Filter>
-    </ClInclude>
-    <ClInclude Include="Eagle.h">
-      <Filter>Framework\Game Objects</Filter>
     </ClInclude>
     <ClInclude Include="Scene.h">
       <Filter>Scenes</Filter>
@@ -237,6 +234,15 @@
     </ClInclude>
     <ClInclude Include="PlayerOther.h">
       <Filter>Framework\Game Objects\Player</Filter>
+    </ClInclude>
+    <ClInclude Include="Grass.h">
+      <Filter>Framework\Game Objects\Other map objs</Filter>
+    </ClInclude>
+    <ClInclude Include="Eagle.h">
+      <Filter>Framework\Game Objects\Other map objs</Filter>
+    </ClInclude>
+    <ClInclude Include="HealItem.h">
+      <Filter>Framework\Game Objects\Item</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

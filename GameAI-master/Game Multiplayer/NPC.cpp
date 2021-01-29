@@ -41,7 +41,7 @@ void NPC::Init()
 	}
 
 	_isAutoShoot = true;
-	_heatLabel = Label(to_string(_heart), 20, 15, Position);
+	//_heatLabel = Label(to_string(_heart), 20, 15, Position);
 
 }
 
@@ -100,8 +100,8 @@ void NPC::Draw()
 	if (_isShield)
 		_shieldAnimation->Draw(Position);
 
-	_heatLabel.setPosition(Position);
-	_heatLabel.Draw(to_string(_heart), D3DCOLOR_XRGB(0, 255, 0));
+	//_heatLabel.setPosition(Position);
+	//_heatLabel.Draw(to_string(_heart), D3DCOLOR_XRGB(0, 255, 0));
 }
 
 bool NPC::CheckCollision(Entity * e)

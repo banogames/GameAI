@@ -39,7 +39,7 @@ protected:
 	Animation *_currentAnimation; // animation hiện tại
 	Animation* _shieldAnimation; // animation khiên 
 
-	Label _heatLabel;
+	//Label _heatLabel;
 
 	void ApplyAnimation();
 	D3DXVECTOR2 getVelocityByDirection(Direction direction);

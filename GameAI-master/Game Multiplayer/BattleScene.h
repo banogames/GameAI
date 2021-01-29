@@ -48,8 +48,8 @@ class BattleScene : public Scene
 	vector<HealItem*> _healItemList;
 	//Pointed* _pointed;
 
-	Label _labelPlayer;
-	Label _labelNPC;
+	//Label _labelPlayer;
+	//Label _labelNPC;
 	Label _labelGame;
 	//Label _labelCountTime;
 

@@ -196,8 +196,8 @@ BattleScene::BattleScene()
 	}
 	//_pointed = new Pointed();
 
-	_labelPlayer = Label("", 40, 20, D3DXVECTOR2(0, 0));
-	_labelNPC = Label("", 40, 20, D3DXVECTOR2(0, 0));
+	//_labelPlayer = Label("", 40, 20, D3DXVECTOR2(0, 0));
+	//_labelNPC = Label("", 40, 20, D3DXVECTOR2(0, 0));
 	_labelGame = Label("", 100, 50, D3DXVECTOR2(0, 0));
 }
 
@@ -677,12 +677,12 @@ void BattleScene::Draw()
 	}
 
 	// vẽ điểm ng chơi theo tọa độ của camera => di chuyển cùng camera
-	_labelPlayer.setPosition(D3DXVECTOR2(camera->posX - X_MAX / 2 + X_STEP * 0.5f, camera->posY - Y_MAX / 2));
-	_labelPlayer.Draw("x "+ to_string(eaglePlayer), D3DCOLOR_XRGB(255, 242, 0));
+	//_labelPlayer.setPosition(D3DXVECTOR2(camera->posX - X_MAX / 2 + X_STEP * 0.5f, camera->posY - Y_MAX / 2));
+	//_labelPlayer.Draw("x "+ to_string(eaglePlayer), D3DCOLOR_XRGB(255, 242, 0));
 
 	//vẽ điểm NPC
-	_labelNPC.setPosition(D3DXVECTOR2(camera->posX + X_MAX / 2 - X_STEP * 2.5f, camera->posY - Y_MAX / 2));
-	_labelNPC.Draw("x " + to_string(eagleNPC), D3DCOLOR_XRGB(255, 242, 0));
+	//_labelNPC.setPosition(D3DXVECTOR2(camera->posX + X_MAX / 2 - X_STEP * 2.5f, camera->posY - Y_MAX / 2));
+	//_labelNPC.Draw("x " + to_string(eagleNPC), D3DCOLOR_XRGB(255, 242, 0));
 
 	if (eaglePlayer <= 0 || _player->IsDeleted) {
 		_labelGame.setPosition(D3DXVECTOR2(camera->posX , camera->posY ));

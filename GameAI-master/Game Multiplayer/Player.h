@@ -48,7 +48,7 @@ class Player : public Entity
 	Animation* _shieldAnimation; // animation khiên 
 	Animation* _spawnAnimation; // animation hồi sinh
 
-	Label _heatLabel;
+	//Label _heatLabel;
 
 	void SetAnimation(Direction _dir);
 	void InitAnimation();

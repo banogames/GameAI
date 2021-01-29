@@ -45,7 +45,7 @@ Player::Player()
 	_heart = 10;
 	_maxHeart = 10;
 
-	_heatLabel = Label(to_string(_heart), 20, 15, Position);
+	//_heatLabel = Label(to_string(_heart), 20, 15, Position);
 }
 
 
@@ -401,8 +401,8 @@ void Player::Draw()
 		if (_isShield)
 			_shieldAnimation->Draw(Position);
 
-		_heatLabel.setPosition(Position);
-		_heatLabel.Draw(to_string(_heart), D3DCOLOR_XRGB(0, 255, 0));
+		//_heatLabel.setPosition(Position);
+		//_heatLabel.Draw(to_string(_heart), D3DCOLOR_XRGB(0, 255, 0));
 	}
 
 }
